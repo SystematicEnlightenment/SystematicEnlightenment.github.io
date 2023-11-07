@@ -1,24 +1,44 @@
+/* Reset some default browser styles */
+body, h1, h2, p, ul, li {
+    margin: 0;
+    padding: 0;
+}
+
+/* Style the container to center the content */
+.container {
+    width: 80%;
+    margin: 0 auto;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    margin-top: 20px;
+}
+
 /* Define some general styles for the entire page */
 body {
     font-family: Arial, sans-serif;
     background-color: #f0f0f0;
-    margin: 0;
-    padding: 20px;
 }
 
 /* Style the main heading */
 h1 {
     color: #333;
+    font-size: 24px;
+    margin-bottom: 10px;
 }
 
 /* Style the location paragraph */
 p {
     font-size: 18px;
+    color: #555;
+    margin-bottom: 20px;
 }
 
 /* Style the lineup heading */
 h2 {
     color: #555;
+    font-size: 20px;
     margin-top: 20px;
 }
 
@@ -30,6 +50,12 @@ ul {
 
 /* Style each lineup item */
 li {
-    font-size: 16px;
+    font-size: 18px;
+    color: #444;
     margin: 5px 0;
+}
+
+/* Add some spacing to the bottom of the page */
+body {
+    margin-bottom: 20px;
 }
