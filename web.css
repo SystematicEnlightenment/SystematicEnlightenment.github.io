@@ -1,0 +1,35 @@
+/* Define some general styles for the entire page */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 20px;
+}
+
+/* Style the main heading */
+h1 {
+    color: #333;
+}
+
+/* Style the location paragraph */
+p {
+    font-size: 18px;
+}
+
+/* Style the lineup heading */
+h2 {
+    color: #555;
+    margin-top: 20px;
+}
+
+/* Style the lineup list */
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+/* Style each lineup item */
+li {
+    font-size: 16px;
+    margin: 5px 0;
+}
