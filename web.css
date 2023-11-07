@@ -59,3 +59,13 @@ li {
 body {
     margin-bottom: 20px;
 }
+
+/* Style the rainbow text */
+.rainbow-text h1 {
+    font-size: 48px;
+    text-align: center;
+    background-image: linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet);
+    -webkit-background-clip: text;
+    color: transparent;
+    padding: 10px 0;
+}
