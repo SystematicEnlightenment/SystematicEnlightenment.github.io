@@ -1,64 +1,4 @@
-/* Reset some default browser styles */
-body, h1, h2, p, ul, li {
-    margin: 0;
-    padding: 0;
-}
-
-/* Style the container to center the content */
-.container {
-    width: 80%;
-    margin: 0 auto;
-    background-color: #fff;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-    padding: 20px;
-    margin-top: 20px;
-}
-
-/* Define some general styles for the entire page */
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
-}
-
-/* Style the main heading */
-h1 {
-    color: #333;
-    font-size: 24px;
-    margin-bottom: 10px;
-}
-
-/* Style the location paragraph */
-p {
-    font-size: 18px;
-    color: #555;
-    margin-bottom: 20px;
-}
-
-/* Style the lineup heading */
-h2 {
-    color: #555;
-    font-size: 20px;
-    margin-top: 20px;
-}
-
-/* Style the lineup list */
-ul {
-    list-style-type: none;
-    padding: 0;
-}
-
-/* Style each lineup item */
-li {
-    font-size: 18px;
-    color: #444;
-    margin: 5px 0;
-}
-
-/* Add some spacing to the bottom of the page */
-body {
-    margin-bottom: 20px;
-}
+/* ... (your existing CSS code) */
 
 /* Style the rainbow text */
 .rainbow-text h1 {
@@ -78,5 +18,46 @@ body {
     }
     100% {
         background-position: 100%;
+    }
+}
+
+/* Style the scrolling cat and text behind it */
+.scrolling-cat {
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.cat-emoji {
+    font-size: 48px;
+    animation: scrollCat 2s linear infinite;
+    white-space: nowrap;
+}
+
+.text-behind-cat {
+    font-size: 24px;
+    opacity: 0;
+    animation: fadeIn 2s linear forwards;
+    white-space: nowrap;
+}
+
+/* Scrolling animation for the cat emoji */
+@keyframes scrollCat {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+/* Fade-in animation for the text behind the cat */
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
     }
 }
