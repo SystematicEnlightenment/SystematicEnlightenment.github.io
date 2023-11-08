@@ -1,3 +1,93 @@
+
+<!doctype html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, height=device-height, user-scalable=no">
+    <script src="../components/web-animations-js/web-animations.min.js"></script>
+    <style>
+        body {
+            background-color: black;
+            overflow: hidden;
+            position: relative; /* Add this line to allow positioning of child elements */
+        }
+
+        .starfield {
+            background-color: rgba(0, 0, 0, 0);
+        }
+
+        .star0 {
+            height: 1px;
+            width: 1px;
+            opacity: 1;
+            position: absolute;
+        }
+       
+        .star1 {
+          height: 2px;
+          width: 2px;
+          border-radius: 50%;
+          opacity: 1;
+          position: absolute;
+        }
+
+        .star2 {
+          height: 3px;
+          width: 3px;
+          border-radius: 50%;
+          opacity: 1;
+          position: absolute;
+        }
+
+        .star3 {
+          height: 4px;
+          width: 4px;
+          border-radius: 50%;
+          opacity: 1;
+          position: absolute;
+        }
+
+        .star4 {
+          height: 4px;
+          width: 4px;
+          border-radius: 50%;
+          opacity: 1;
+          position: absolute;
+        }
+
+        /* Add CSS rules for your text container */
+        .text-container {
+            position: absolute;
+            top: 50%; /* Adjust the position as needed */
+            left: 50%; /* Adjust the position as needed */
+            transform: translate(-50%, -50%); /* Center the text */
+            color: white; /* Text color */
+            font-size: 24px; /* Adjust the font size */
+        }
+    </style>
+</head>
+<body>
+<div id="universe">
+    <!-- Add a div for your text content -->
+    <div class="text-container">
+        NYE party in the The Queens Head by Eastville park:
+        286 Fishponds Rd, Eastville, Bristol BS5 6PY
+
+
+        8:00 - Josh Jukes
+        8:30 - DnbB Matt
+        9:00 - Pablo
+        10:00 - Jo
+        11:00 - DJTJD
+        12:00 - Luke
+        01:00 - Close
+    </div>
+</div>
+<script>
+    var layerCount = 5;
+    var starCount = 100;
+    var universe = document.getElementById('universe');
+    var w = window;
+    var d = document;
     var e = d.documentElement;
     var g = d.getElementsByTagName('body')[0];
     var width = w.innerWidth || e.clientWidth || g.clientWidth;
