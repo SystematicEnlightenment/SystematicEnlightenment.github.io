@@ -1,100 +1,77 @@
-
-
 <!doctype html>
-<meta name="viewport" content="width=device-width, height=device-height, user-scalable=no">
-<script src="../components/web-animations-js/web-animations.min.js"></script>
-<style>
-  body {
-    background-color: black;
-    overflow: hidden;
-  }
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, height=device-height, user-scalable=no">
+    <script src="../components/web-animations-js/web-animations.min.js"></script>
+    <style>
+        body {
+            background-color: black;
+            overflow: hidden;
+            position: relative; /* Add this line to allow positioning of child elements */
+        }
 
-  .starfield {
-    background-color: rgba(0,0,0,0);
-  }
+        .starfield {
+            background-color: rgba(0, 0, 0, 0);
+        }
 
-  .star0 {
-    height: 1px;
-    width: 1px;
-    opacity: 1;
-    position: absolute;
-  }
+        .star0 {
+            height: 1px;
+            width: 1px;
+            opacity: 1;
+            position: absolute;
+        }
 
-  .star1 {
-    height: 2px;
-    width: 2px;
-    border-radius: 50%;
-    opacity: 1;
-    position: absolute;
-  }
-
-  .star2 {
-    height: 3px;
-    width: 3px;
-    border-radius: 50%;
-    opacity: 1;
-    position: absolute;
-  }
-
-  .star3 {
-    height: 4px;
-    width: 4px;
-    border-radius: 50%;
-    opacity: 1;
-    position: absolute;
-  }
-
-  .star4 {
-    height: 4px;
-    width: 4px;
-    border-radius: 50%;
-    opacity: 1;
-    position: absolute;
-  }
-</style>
-<div id="universe"></div>
+        /* Add CSS rules for your text container */
+        .text-container {
+            position: absolute;
+            top: 50%; /* Adjust the position as needed */
+            left: 50%; /* Adjust the position as needed */
+            transform: translate(-50%, -50%); /* Center the text */
+            color: white; /* Text color */
+            font-size: 24px; /* Adjust the font size */
+        }
+    </style>
+</head>
+<body>
+<div id="universe">
+    <!-- Add a div for your text content -->
+    <div class="text-container">
+        Your Text Goes Here
+    </div>
+</div>
 <script>
-  var layerCount = 5;
-  var starCount = 100;
-  var universe = document.getElementById('universe');
-  var w = window;
-  var d = document;
-  var e = d.documentElement;
-  var g = d.getElementsByTagName('body')[0];
-  var width = w.innerWidth || e.clientWidth || g.clientWidth;
-  var height = w.innerHeight|| e.clientHeight|| g.clientHeight;
-  for (var l = 0; l < layerCount; ++l) {
-    var layer = document.createElement('div');
-    layer.setAttribute('id', 'layer' + l);
-    layer.setAttribute('class', 'starfield');
-    universe.appendChild(layer);
-    for (var i = 0; i < starCount; ++i) {
-      var xpos = Math.round(Math.random() * width);
-      var ypos = Math.round(Math.random() * height);
-      for (var s = 0; s < 2; ++s) {
-        var star = document.createElement('div');
-        star.setAttribute('class', 'star' + l);
-        star.style.webkitTransform = 'translate(' + (xpos + s * width) + 'px, ' + ypos + 'px)';
-        star.style.transform = 'translate(' + (xpos + s * width) + 'px, ' + ypos + 'px)';
-        star.style.backgroundColor = 'white';//rgb(' + Math.round(Math.random() * 255) + ', ' + Math.round(Math.random() * 255) + ', ' + Math.round(Math.random() * 255) + ')';
-        layer.appendChild(star);
-      }
+    var layerCount = 5;
+    var starCount = 100;
+    var universe = document.getElementById('universe');
+    var w = window;
+    var d = document;
+    var e = d.documentElement;
+    var g = d.getElementsByTagName('body')[0];
+    var width = w.innerWidth || e.clientWidth || g.clientWidth;
+    var height = w.innerHeight || e.clientHeight || g.clientHeight;
+    for (var l = 0; l < layerCount; ++l) {
+        var layer = document.createElement('div');
+        layer.setAttribute('id', 'layer' + l);
+        layer.setAttribute('class', 'starfield');
+        universe.appendChild(layer);
+        for (var i = 0; i < starCount; ++i) {
+            var xpos = Math.round(Math.random() * width);
+            var ypos = Math.round(Math.random() * height);
+            for (var s = 0; s < 2; ++s) {
+                var star = document.createElement('div');
+                star.setAttribute('class', 'star' + l);
+                star.style.webkitTransform = 'translate(' + (xpos + s * width) + 'px, ' + ypos + 'px)';
+                star.style.transform = 'translate(' + (xpos + s * width) + 'px, ' + ypos + 'px)';
+                star.style.backgroundColor = 'white'; //rgb(' + Math.round(Math.random() * 255) + ', ' + Math.round(Math.random() * 255) + ', ' + Math.round(Math.random() * 255) + ')';
+                layer.appendChild(star);
+            }
+        }
+        layer.animate([
+                {transform: 'translate3d(0, 0, 0)'},
+                {transform: 'translate3d(-' + width + 'px, 0, 0)'}
+            ],
+            {duration: Math.pow(2, layerCount - l) * 1000, iterations: Infinity});
     }
-    layer.animate([{transform: 'translate3d(0, 0, 0)'},
-                   {transform: 'translate3d(-' + width + 'px, 0, 0)'}],
-                  {duration: Math.pow(2, layerCount - l) * 1000, iterations: Infinity});
-  }
 </script>
-
-Web Animations
-Parallax Starfield
-500 Individual Stars
-Animate.css
-Spinning Dots
-Expandoboard
-Galaxy
-Playback Control
-Ripple
-Waves
-Clouds
-Phone
+</body>
+</html>
