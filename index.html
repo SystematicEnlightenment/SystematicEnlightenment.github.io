@@ -175,14 +175,19 @@
 
         const rainContainer = document.getElementById('rainContainer');
         // Create initial columns
-        for (let i = 0; i < 25; i++) {
+        // Create initial columns - responsive number based on screen width
+        const screenWidth = window.innerWidth;
+        const initialColumns = screenWidth <= 768 ? 15 : 25;
+        const maxColumns = screenWidth <= 768 ? 30 : 50;
+        
+        for (let i = 0; i < initialColumns; i++) {
             rainContainer.appendChild(createRainColumn());
         }
 
         // Maintain columns
         setInterval(() => {
             const oldColumns = document.getElementsByClassName('rain-column');
-            if (oldColumns.length > 50) {
+            if (oldColumns.length > maxColumns) {
                 rainContainer.removeChild(oldColumns[0]);
             }
             rainContainer.appendChild(createRainColumn());
