@@ -1,128 +1,123 @@
-
-<!doctype html>
+<!DOCTYPE html>
 <html>
 <head>
     <meta name="viewport" content="width=device-width, height=device-height, user-scalable=no">
-    <script src="../components/web-animations-js/web-animations.min.js"></script>
     <style>
         body {
             background-color: black;
+            margin: 0;
             overflow: hidden;
-            position: relative; /* Add this line to allow positioning of child elements */
+            font-family: monospace;
         }
 
-        .starfield {
-            background-color: rgba(0, 0, 0, 0);
+        .matrix-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            text-align: center;
         }
 
-        .star0 {
-            height: 1px;
-            width: 1px;
+        .matrix-text {
+            display: inline-block;
+            font-size: 18px;
+            color: #00ff00;
+            opacity: 0;
+            position: relative;
+            margin: 2px;
+        }
+
+        .matrix-text.revealed {
+            color: #004400;
             opacity: 1;
+        }
+
+        .matrix-rain {
             position: absolute;
-        }
-       
-        .star1 {
-          height: 2px;
-          width: 2px;
-          border-radius: 50%;
-          opacity: 1;
-          position: absolute;
+            color: #00ff00;
+            font-size: 18px;
+            transform: translateY(-20px);
+            opacity: 0;
         }
 
-        .star2 {
-          height: 3px;
-          width: 3px;
-          border-radius: 50%;
-          opacity: 1;
-          position: absolute;
-        }
-
-        .star3 {
-          height: 4px;
-          width: 4px;
-          border-radius: 50%;
-          opacity: 1;
-          position: absolute;
-        }
-
-        .star4 {
-          height: 4px;
-          width: 4px;
-          border-radius: 50%;
-          opacity: 1;
-          position: absolute;
-        }
-
-        /* Add CSS rules for your text container */
-        .text-container {
-            position: absolute;
-            top: 50%; /* Adjust the position as needed */
-            left: 50%; /* Adjust the position as needed */
-            transform: translate(-50%, -10%); /* Center the text */
-            color: white; /* Text color */
-            font-size: 18px; /* Adjust the font size */
-            width: 80%; /* Adjust the width as needed, e.g., 80% of the viewport width */
-            padding: 10px; /* Add padding for spacing */    
-            overflow: auto; /* Make the container scrollable */
-            max-height: 90vh; /* Set maximum height to 90% of the viewport height */
+        @keyframes rainDrop {
+            0% {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(20px);
+                opacity: 0;
+            }
         }
     </style>
 </head>
 <body>
-<div id="universe">
-    <!-- Add a div for your text content -->
-    <div class="text-container">
-        <p>
-            <br />
-            <br />
-            <br />
-            ✩.•🐋 ☽ .* ✧🎧<br />
-            Night in the The Red Lion:<br />
-            <a href="https://maps.app.goo.gl/ecNSmWkaGAnj6Vze9" style="color: #3DA5FF;">286 206 Whitehall Rd, Bristol BS5 9BP <br /> </a>
-            ✮⋆｡° ˗ˏˋ 🍉🍓 ˎˊ˗ | 🍓₊˚ʚ ᗢ₊˚✧ ﾟ.🍉⋆｡°✩🍒₊˚ʚ ᗢ₊˚.<br />
-            7:00 - Music Starts<br />
+    <div class="matrix-container" id="matrixContainer"></div>
+
+    <script>
+        const text = `
+            ✩.•🐋 ☽ .* ✧🎧
+            Night in the The Red Lion:
+            286 206 Whitehall Rd, Bristol BS5 9BP
+            ✮⋆｡° ˗ˏˋ 🍉🍓 ˎˊ˗ | 🍓₊˚ʚ ᗢ₊˚✧ ﾟ.🍉⋆｡°✩🍒₊˚ʚ ᗢ₊˚.
+            7:00 - Music Starts
             DJs TBC
-            02:00 - Music Ends  ٩◔̯◔۶  <br />
-            ✩.•🐋 ☽ .* ✧🎧<br />
-            <a href="https://www.justgiving.com/page/systematicenlightenmentpart2?utm_medium=FR&utm_source=CL" style="color: #3DA5FF;">‼️Bring/donate cash for Gaza‼️<br /> </a>
-            Free entry, invite anyone.<br /> 
-        <p>
-    </div>
-</div>
-<script>
-    var layerCount = 5;
-    var starCount = 100;
-    var universe = document.getElementById('universe');
-    var w = window;
-    var d = document;
-    var e = d.documentElement;
-    var g = d.getElementsByTagName('body')[0];
-    var width = w.innerWidth || e.clientWidth || g.clientWidth;
-    var height = w.innerHeight || e.clientHeight || g.clientHeight;
-    for (var l = 0; l < layerCount; ++l) {
-        var layer = document.createElement('div');
-        layer.setAttribute('id', 'layer' + l);
-        layer.setAttribute('class', 'starfield');
-        universe.appendChild(layer);
-        for (var i = 0; i < starCount; ++i) {
-            var xpos = Math.round(Math.random() * width);
-            var ypos = Math.round(Math.random() * height);
-            for (var s = 0; s < 2; ++s) {
-                var star = document.createElement('div');
-                star.setAttribute('class', 'star' + l);
-                star.style.webkitTransform = 'translate(' + (xpos + s * width) + 'px, ' + ypos + 'px)';
-                star.style.transform = 'translate(' + (xpos + s * width) + 'px, ' + ypos + 'px)';
-                star.style.backgroundColor = 'white'; //rgb(' + Math.round(Math.random() * 255) + ', ' + Math.round(Math.random() * 255) + ', ' + Math.round(Math.random() * 255) + ')';
-                layer.appendChild(star);
-            }
+            02:00 - Music Ends  ٩◔̯◔۶
+            ✩.•🐋 ☽ .* ✧🎧
+            ‼️Bring/donate cash for Gaza‼️
+            Free entry, invite anyone.
+        `;
+
+        const container = document.getElementById('matrixContainer');
+        const lines = text.split('\n').map(line => line.trim()).filter(line => line);
+
+        function createMatrixEffect(element, finalChar) {
+            const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+            let iterations = 0;
+            const maxIterations = 10;
+            
+            const rain = document.createElement('span');
+            rain.classList.add('matrix-rain');
+            rain.style.left = element.offsetLeft + 'px';
+            rain.style.top = element.offsetTop + 'px';
+            container.appendChild(rain);
+
+            const interval = setInterval(() => {
+                if (iterations >= maxIterations) {
+                    clearInterval(interval);
+                    element.textContent = finalChar;
+                    element.classList.add('revealed');
+                    rain.remove();
+                    return;
+                }
+
+                rain.textContent = chars[Math.floor(Math.random() * chars.length)];
+                rain.style.animation = 'rainDrop 0.5s linear';
+                
+                iterations++;
+            }, 50);
         }
-        layer.animate([
-                {transform: 'translate3d(0, 0, 0)'},
-                {transform: 'translate3d(-' + width + 'px, 0, 0)'}
-            ],
-            {duration: Math.pow(2, layerCount - l) * 1000, iterations: Infinity});
-    }
-</script>
+
+        lines.forEach((line, lineIndex) => {
+            const lineDiv = document.createElement('div');
+            container.appendChild(lineDiv);
+
+            [...line].forEach((char, charIndex) => {
+                const span = document.createElement('span');
+                span.classList.add('matrix-text');
+                span.textContent = char;
+                lineDiv.appendChild(span);
+
+                setTimeout(() => {
+                    createMatrixEffect(span, char);
+                }, (lineIndex * 1000) + (charIndex * 50));
+            });
+        });
+    </script>
 </body>
 </html>
