@@ -28,7 +28,6 @@
             animation: rain 12s linear infinite;
         }
 
-        /* Base styles for larger screens */
         .rain-char {
             display: block;
             transition: color 0.1s;
@@ -36,7 +35,6 @@
             opacity: 0.3;
         }
 
-        /* Create a gradual fade effect, brightest at the bottom characters */
         .rain-char:last-child {
             color: #ffffff;
             text-shadow: 0 0 8px #fff;
@@ -67,7 +65,6 @@
             opacity: 0.3;
         }
 
-        /* Increase transparency on mobile */
         @media (max-width: 768px) {
             .rain-char {
                 opacity: 0.15;
@@ -84,7 +81,6 @@
             .rain-char:nth-last-child(2) {
                 opacity: 0.7;
             }
-            /* Keep the last (white) character fully visible */
             .rain-char:last-child {
                 opacity: 1;
             }
@@ -99,7 +95,6 @@
             }
         }
 
-        /* Rest of your existing styles for matrix container and text */
         .matrix-container {
             position: absolute;
             top: 50%;
@@ -108,6 +103,15 @@
             width: 80%;
             text-align: center;
             z-index: 100;
+            max-height: 80vh;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .matrix-container::-webkit-scrollbar {
+            display: none;
         }
 
         .matrix-text {
@@ -178,10 +182,8 @@
             column.style.left = Math.random() * 100 + '%';
             column.style.animationDelay = -Math.random() * 12 + 's';
             
-            // Create a longer stream of characters
             const length = 20 + Math.floor(Math.random() * 15);
             
-            // Create the stream of characters
             for (let i = 0; i < length; i++) {
                 const char = document.createElement('div');
                 char.className = 'rain-char';
@@ -189,7 +191,6 @@
                 column.appendChild(char);
             }
             
-            // Update characters periodically
             setInterval(() => {
                 Array.from(column.children).forEach(char => {
                     char.textContent = createRainChar();
@@ -200,8 +201,6 @@
         }
 
         const rainContainer = document.getElementById('rainContainer');
-        // Create initial columns
-        // Create initial columns - responsive number based on screen width
         const screenWidth = window.innerWidth;
         const initialColumns = screenWidth <= 768 ? 15 : 25;
         const maxColumns = screenWidth <= 768 ? 30 : 50;
@@ -210,7 +209,6 @@
             rainContainer.appendChild(createRainColumn());
         }
 
-        // Maintain columns
         setInterval(() => {
             const oldColumns = document.getElementsByClassName('rain-column');
             if (oldColumns.length > maxColumns) {
@@ -219,7 +217,6 @@
             rainContainer.appendChild(createRainColumn());
         }, 1000);
 
-        // Your existing matrix text animation code
         const container = document.getElementById('matrixContainer');
 
         function createMatrixEffect(element, finalChar, isLink = false) {
