@@ -28,6 +28,7 @@
             animation: rain 12s linear infinite;
         }
 
+        /* Base styles for larger screens */
         .rain-char {
             display: block;
             transition: color 0.1s;
@@ -64,6 +65,29 @@
             color: #00ff00;
             text-shadow: 0 0 8px rgba(0, 255, 0, 0.5);
             opacity: 0.3;
+        }
+
+        /* Increase transparency on mobile */
+        @media (max-width: 768px) {
+            .rain-char {
+                opacity: 0.15;
+            }
+            .rain-char:nth-last-child(n+5) {
+                opacity: 0.15;
+            }
+            .rain-char:nth-last-child(4) {
+                opacity: 0.3;
+            }
+            .rain-char:nth-last-child(3) {
+                opacity: 0.5;
+            }
+            .rain-char:nth-last-child(2) {
+                opacity: 0.7;
+            }
+            /* Keep the last (white) character fully visible */
+            .rain-char:last-child {
+                opacity: 1;
+            }
         }
 
         @keyframes rain {
@@ -130,9 +154,9 @@
     <script>
         const textContent = [
             '✩.•🐋 ☽ .* ✧🎧',
-            '26th April 2025',
+            '26th April 2025',            
             'Night in the [[The Red Lion:https://maps.app.goo.gl/ecNSmWkaGAnj6Vze9]]:',
-            '286-206 Whitehall Rd, Bristol BS5 9BP',
+            '286 206 Whitehall Rd, Bristol BS5 9BP',
             '✮⋆｡° ˗ˏˋ 🍉🍓 ˎˊ˗ | 🍓₊˚ʚ ᗢ₊˚✧ ﾟ.🍉⋆｡°✩🍒₊˚ʚ ᗢ₊˚.',
             '7:00 - Music Starts',
             'DJs TBC',
