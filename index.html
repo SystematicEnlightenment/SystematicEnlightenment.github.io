@@ -3,6 +3,11 @@
 <head>
     <meta name="viewport" content="width=device-width, height=device-height, user-scalable=no">
     <style>
+        @font-face {
+            font-family: 'MatrixFont';
+            src: url('matrix.ttf') format('truetype');
+        }
+
         body {
             background-color: black;
             margin: 0;
@@ -65,6 +70,59 @@
             opacity: 0.3;
         }
 
+        .matrix-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            text-align: center;
+            z-index: 100;
+            max-height: 80vh;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .matrix-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        .matrix-text {
+            display: inline-block;
+            font-size: 20px;
+            color: #00ff00;
+            opacity: 0;
+            position: relative;
+            margin: 2px;
+            text-shadow: 0 0 8px rgba(0, 255, 0, 0.5);
+            font-family: 'MatrixFont', monospace; /* Apply Matrix font with fallback */
+        }
+
+        /* Only apply matrix font to English characters */
+        .matrix-text:not(:matches([^\x00-\x7F])) {
+            font-family: 'MatrixFont', monospace;
+        }
+
+        .matrix-text.revealed {
+            color: #4dff4d;
+            opacity: 1;
+            text-shadow: 0 0 12px rgba(0, 255, 0, 0.7);
+            animation: revealGlow 0.5s forwards;
+        }
+
+        .matrix-link {
+            color: #ffffff !important;
+            text-decoration: none;
+            text-shadow: 0 0 12px rgba(255, 255, 255, 0.7);
+            font-family: 'MatrixFont', monospace; /* Apply Matrix font to links */
+        }
+
+        .matrix-link:hover {
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.9);
+        }
+
         @media (max-width: 768px) {
             .rain-char {
                 opacity: 0.15;
@@ -95,52 +153,6 @@
             }
         }
 
-        .matrix-container {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 80%;
-            text-align: center;
-            z-index: 100;
-            max-height: 80vh;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-        }
-
-        .matrix-container::-webkit-scrollbar {
-            display: none;
-        }
-
-        .matrix-text {
-            display: inline-block;
-            font-size: 20px;
-            color: #00ff00;
-            opacity: 0;
-            position: relative;
-            margin: 2px;
-            text-shadow: 0 0 8px rgba(0, 255, 0, 0.5);
-        }
-
-        .matrix-text.revealed {
-            color: #4dff4d;
-            opacity: 1;
-            text-shadow: 0 0 12px rgba(0, 255, 0, 0.7);
-            animation: revealGlow 0.5s forwards;
-        }
-
-        .matrix-link {
-            color: #ffffff !important;
-            text-decoration: none;
-            text-shadow: 0 0 12px rgba(255, 255, 255, 0.7);
-        }
-
-        .matrix-link:hover {
-            text-shadow: 0 0 20px rgba(255, 255, 255, 0.9);
-        }
-
         @keyframes revealGlow {
             from {
                 text-shadow: 0 0 20px #4dff4d;
@@ -152,10 +164,12 @@
     </style>
 </head>
 <body>
+    <!-- Rest of your HTML remains the same -->
     <div class="rain-container" id="rainContainer"></div>
     <div class="matrix-container" id="matrixContainer"></div>
 
     <script>
+        // Your existing JavaScript code remains the same
         const textContent = [
             '✩.•🐋 ☽ .* ✧🎧',
             '26th April 2025',            
@@ -173,6 +187,11 @@
             'Free entry',
             'Invite anyone.'
         ];
+
+        // Rest of your JavaScript code remains the same
+    </script>
+</body>
+</html>
 
         function createRainChar() {
             const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
