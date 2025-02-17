@@ -3,22 +3,14 @@
 <head>
     <meta name="viewport" content="width=device-width, height=device-height, user-scalable=no">
     <style>
-        @font-face {
-            font-family: 'Matrix Code NFI';
-            src: url('../fonts/matrix.ttf') format('truetype');
-            font-weight: normal;
-            font-style: normal;
-        }
-        
         body {
             background-color: black;
             margin: 0;
             overflow: hidden;
-            font-family: 'Matrix Code NFI', monospace;
-            text-shadow: 0 0 3px #00FF41, 0 0 5px #00FF41, 0 0 5px #00FF41;
+            font-family: monospace;
             letter-spacing: 1px;
             font-style: italic;
-            font-weight: normal;
+            font-weight: bold;
         }
         
         .matrix-text {
@@ -68,6 +60,18 @@
             opacity: 0.7;
         }
 
+        .rain-char:nth-last-child(4) {
+            color: #00ff00;
+            text-shadow: 0 0 8px rgba(0, 255, 0, 0.7);
+            opacity: 0.5;
+        }
+
+        .rain-char:nth-last-child(n+5) {
+            color: #00ff00;
+            text-shadow: 0 0 8px rgba(0, 255, 0, 0.5);
+            opacity: 0.3;
+        }
+
         .matrix-container {
             position: absolute;
             top: 50%;
@@ -80,7 +84,6 @@
             overflow-y: auto;
             font-size: 24px;
             padding: 40px 20px;
-            /* Create fade effect container */
             mask-image: linear-gradient(
                 180deg,
                 transparent 0%,
@@ -142,7 +145,6 @@
             color: #ffffff !important;
             text-decoration: none;
             text-shadow: 0 0 12px rgba(255, 255, 255, 0.7);
-            font-family: 'Courier New', monospace;
         }
 
         @keyframes rain {
@@ -163,24 +165,23 @@
     <script>
         const textContent = [
             '神 ☽ 龍 ✧ 閃',
-            '<span style="font-family: monospace;">26</span>th April <span style="font-family: monospace;">2025</span>',            
+            '26th April 2025',            
             'Night in the [[🔗 The Red Lion 🔗:https://maps.app.goo.gl/ecNSmWkaGAnj6Vze9]]:',
-            '<span style="font-family: monospace;">286 206</span> Whitehall Rd,',
-            'Bristol BS<span style="font-family: monospace;">5 9</span>BP',
+            '286 206 Whitehall Rd,',
+            'Bristol BS5 9BP',
             '凜 玲 零 霊 麗 † 煌 輝 燦 焔',
             'Djs:',
-            'Garo<span style="font-family: monospace;">ë</span>ss',
+            'Garoëss',
             'DJTᒐᗡ',            
-            'DJ <span style="font-family: monospace;">60</span> degrees',
+            'DJ 60 degrees',
             'More TBC',
-            '<span style="font-family: monospace;">02:00</span> - Music Ends 禅',
+            '02:00 - Music Ends 禅',
             '神 閃 龍 † 煌',
             '[[🔗 警告 DONATE FOR GAZA 警告 🔗:https://www.justgiving.com/page/systematicenlightenmentpart2]]',
             'Free entry',
             'Invite anyone.'
         ];
 
-        // Rest of the JavaScript remains the same as your original code
         function createRainChar() {
             const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
             return chars[Math.floor(Math.random() * chars.length)];
@@ -267,8 +268,6 @@
                 isLink: false
             };
         }
-
-
 
         textContent.forEach((line, lineIndex) => {
             const lineDiv = document.createElement('div');
