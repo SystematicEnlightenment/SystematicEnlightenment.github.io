@@ -8,6 +8,13 @@
             margin: 0;
             overflow: hidden;
             font-family: monospace;
+            letter-spacing: 1px;
+            font-style: italic;
+            font-weight: bold;
+        }
+        
+        .matrix-text {
+            text-shadow: 0 0 5px #00ff00;
         }
 
         .rain-container {
@@ -53,48 +60,6 @@
             opacity: 0.7;
         }
 
-        .rain-char:nth-last-child(4) {
-            color: #00ff00;
-            text-shadow: 0 0 8px rgba(0, 255, 0, 0.7);
-            opacity: 0.5;
-        }
-
-        .rain-char:nth-last-child(n+5) {
-            color: #00ff00;
-            text-shadow: 0 0 8px rgba(0, 255, 0, 0.5);
-            opacity: 0.3;
-        }
-
-        @media (max-width: 768px) {
-            .rain-char {
-                opacity: 0.15;
-            }
-            .rain-char:nth-last-child(n+5) {
-                opacity: 0.15;
-            }
-            .rain-char:nth-last-child(4) {
-                opacity: 0.3;
-            }
-            .rain-char:nth-last-child(3) {
-                opacity: 0.5;
-            }
-            .rain-char:nth-last-child(2) {
-                opacity: 0.7;
-            }
-            .rain-char:last-child {
-                opacity: 1;
-            }
-        }
-
-        @keyframes rain {
-            0% {
-                transform: translateY(-100%);
-            }
-            100% {
-                transform: translateY(100vh);
-            }
-        }
-
         .matrix-container {
             position: absolute;
             top: 50%;
@@ -105,18 +70,34 @@
             z-index: 100;
             max-height: 80vh;
             overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
+            font-size: 24px;
+            padding: 40px 20px;
+            /* Create fade effect container */
+            mask-image: linear-gradient(
+                180deg,
+                transparent 0%,
+                black 10%,
+                black 90%,
+                transparent 100%
+            );
+            -webkit-mask-image: linear-gradient(
+                180deg,
+                transparent 0%,
+                black 10%,
+                black 90%,
+                transparent 100%
+            );
         }
 
-        .matrix-container::-webkit-scrollbar {
-            display: none;
+        @media (max-width: 768px) {
+            .matrix-container {
+                width: 90%;
+                font-size: 20px;
+            }
         }
 
         .matrix-text {
             display: inline-block;
-            font-size: 20px;
             color: #00ff00;
             opacity: 0;
             position: relative;
@@ -135,19 +116,17 @@
             color: #ffffff !important;
             text-decoration: none;
             text-shadow: 0 0 12px rgba(255, 255, 255, 0.7);
+            font-family: 'Courier New', monospace;
         }
 
-        .matrix-link:hover {
-            text-shadow: 0 0 20px rgba(255, 255, 255, 0.9);
+        @keyframes rain {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100vh); }
         }
 
         @keyframes revealGlow {
-            from {
-                text-shadow: 0 0 20px #4dff4d;
-            }
-            to {
-                text-shadow: 0 0 12px rgba(0, 255, 0, 0.7);
-            }
+            from { text-shadow: 0 0 20px #4dff4d; }
+            to { text-shadow: 0 0 12px rgba(0, 255, 0, 0.7); }
         }
     </style>
 </head>
@@ -157,23 +136,25 @@
 
     <script>
         const textContent = [
-            '✩.•🐋 ☽ .* ✧🎧',
+            '神 ☽ 龍 ✧ 閃',
             '26th April 2025',            
-            'Night in the [[The Red Lion:https://maps.app.goo.gl/ecNSmWkaGAnj6Vze9]]:',
-            '286 206 Whitehall Rd, Bristol BS5 9BP',
-            '✮⋆｡° ˗ˏˋ 🍉🍓 ˎˊ˗ | 🍓₊˚ʚ ᗢ₊˚✧ ﾟ.🍉⋆｡°✩🍒₊˚ʚ ᗢ₊˚.',
+            'Night in the [[🔗 The Red Lion 🔗:https://maps.app.goo.gl/ecNSmWkaGAnj6Vze9]]:',
+            '286 206 Whitehall Rd,',
+            'Bristol BS5 9BP',
+            '凜 玲 零 霊 麗 † 煌 輝 燦 焔',
             'Djs:',
             'Garoëss',
             'DJTᒐᗡ',            
             'DJ 60 degrees',
             'More TBC',
-            '02:00 - Music Ends  ٩◔̯◔۶',
-            '✩.•🐋 ☽ .* ✧🎧',
-            '[[‼️Bring/donate cash for Gaza‼️:https://www.justgiving.com/page/systematicenlightenmentpart2]]',
+            '02:00 - Music Ends 禅',
+            '神 閃 龍 † 煌',
+            '[[🔗 警告 DONATE FOR GAZA 警告 🔗:https://www.justgiving.com/page/systematicenlightenmentpart2]]',
             'Free entry',
             'Invite anyone.'
         ];
 
+        // Rest of the JavaScript remains the same as your original code
         function createRainChar() {
             const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
             return chars[Math.floor(Math.random() * chars.length)];
@@ -260,6 +241,8 @@
                 isLink: false
             };
         }
+
+
 
         textContent.forEach((line, lineIndex) => {
             const lineDiv = document.createElement('div');
