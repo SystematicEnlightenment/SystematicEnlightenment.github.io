@@ -347,7 +347,8 @@
                     const glyphWidth = (glyph.advanceWidth * fontSize / font.unitsPerEm) / 15;
                     
                     const x = currentX + glyphWidth / 2;
-                    const y = -lineIndex * baseLineHeight + (lines.length * baseLineHeight) / 2 - baseLineHeight / 2;
+                    // Position from bottom up: bottom line at y=-28 (4 units above ground at -32)
+                    const y = -28 + (lines.length - 1 - lineIndex) * baseLineHeight;
                     
                     // Apply random Z offset using zOffsetMultiplier (NOT extrusionDepth)
                     const zOffset = letterDepthOffsets[charIndex] * zOffsetMultiplier * 0.5;
