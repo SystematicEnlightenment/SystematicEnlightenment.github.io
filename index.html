@@ -20,11 +20,14 @@
             position: absolute;
             top: 20px;
             right: 20px;
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.8);
             padding: 20px;
             border-radius: 8px;
             color: white;
-            min-width: 250px;
+            min-width: 280px;
+            max-height: 90vh;
+            overflow-y: auto;
+            z-index: 1000;
         }
         .control-group {
             margin-bottom: 15px;
@@ -37,6 +40,39 @@
         input[type="range"] {
             width: 100%;
         }
+        select {
+            width: 100%;
+            padding: 8px;
+            background: #2a2a3e;
+            color: white;
+            border: 1px solid #444;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+        }
+        button {
+            flex: 1;
+            padding: 10px;
+            background: #2a2a3e;
+            color: white;
+            border: 1px solid #444;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        button.active {
+            background: #3498db;
+            border-color: #3498db;
+        }
+        button:hover {
+            background: #3a3a4e;
+        }
+        button.active:hover {
+            background: #2980b9;
+        }
         .value-display {
             display: inline-block;
             margin-left: 10px;
@@ -47,6 +83,35 @@
 </head>
 <body>
     <div id="controls">
+        <div class="control-group">
+            <label>Font:</label>
+            <select id="fontSelect">
+                <option value="https://cdn.jsdelivr.net/npm/@fontsource/source-code-pro@5.0.8/files/source-code-pro-latin-700-normal.woff">Source Code Pro Bold</option>
+                <option value="https://cdn.jsdelivr.net/npm/@fontsource/roboto@5.0.8/files/roboto-latin-700-normal.woff">Roboto Bold</option>
+                <option value="https://cdn.jsdelivr.net/npm/@fontsource/open-sans@5.0.17/files/open-sans-latin-700-normal.woff">Open Sans Bold</option>
+                <option value="https://cdn.jsdelivr.net/npm/@fontsource/pacifico@5.0.10/files/pacifico-latin-400-normal.woff">Pacifico</option>
+                <option value="https://cdn.jsdelivr.net/npm/@fontsource/permanent-marker@5.0.9/files/permanent-marker-latin-400-normal.woff">Permanent Marker</option>
+                <option value="https://cdn.jsdelivr.net/npm/@fontsource/indie-flower@5.0.10/files/indie-flower-latin-400-normal.woff">Indie Flower</option>
+                <option value="https://cdn.jsdelivr.net/npm/@fontsource/press-start-2p@5.0.9/files/press-start-2p-latin-400-normal.woff">Press Start 2P</option>
+                <option value="https://cdn.jsdelivr.net/npm/@fontsource/anton@5.0.17/files/anton-latin-400-normal.woff">Anton</option>
+                <option value="https://cdn.jsdelivr.net/npm/@fontsource/righteous@5.0.17/files/righteous-latin-400-normal.woff">Righteous</option>
+            </select>
+        </div>
+        <div class="control-group">
+            <label>Font Style:</label>
+            <div class="button-group">
+                <button id="boldBtn" class="active">Bold</button>
+                <button id="italicBtn">Italic</button>
+            </div>
+        </div>
+        <div class="control-group">
+            <label>Letter Spacing: <span class="value-display" id="spacing-value">1.0</span></label>
+            <input type="range" id="spacing" min="0" max="3" value="1" step="0.1">
+        </div>
+        <div class="control-group">
+            <label>Line Spacing: <span class="value-display" id="lineSpacing-value">1.0</span></label>
+            <input type="range" id="lineSpacing" min="0.5" max="3" value="1" step="0.1">
+        </div>
         <div class="control-group">
             <label>Rotation Y (0-360°): <span class="value-display" id="rotY-value">0°</span></label>
             <input type="range" id="rotY" min="0" max="360" value="0" step="1">
@@ -60,12 +125,18 @@
             <input type="range" id="depth" min="1" max="150" value="20" step="1">
         </div>
     </div>
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/opentype.js/1.3.4/opentype.min.js"></script>
     <script>
         let scene, camera, renderer, textGroup;
         let extrusionDepth = 20;
         let font = null;
+        let letterSpacingMultiplier = 1.0;
+        let lineSpacingMultiplier = 1.0;
+        let isBold = true;
+        let isItalic = false;
+        let currentFontUrl = 'https://cdn.jsdelivr.net/npm/@fontsource/source-code-pro@5.0.8/files/source-code-pro-latin-700-normal.woff';
 
         function init() {
             scene = new THREE.Scene();
@@ -94,21 +165,23 @@
             textGroup.rotation.x = 0;
             scene.add(textGroup);
 
-            // Load font
-            opentype.load('https://cdnjs.cloudflare.com/ajax/libs/topcoat/0.8.0/font/SourceCodePro-Bold.otf', function(err, loadedFont) {
-                if (err) {
-                    console.error('Font loading error:', err);
-                    // Fallback to simple shapes if font fails
-                    buildTextSimple();
-                } else {
-                    font = loadedFont;
-                    buildText();
-                }
-            });
+            loadFont(currentFontUrl);
 
             setupControls();
             window.addEventListener('resize', onWindowResize);
             animate();
+        }
+
+        function loadFont(url) {
+            opentype.load(url, function(err, loadedFont) {
+                if (err) {
+                    console.error('Font loading error:', err);
+                    buildTextSimple();
+                } else {
+                    font = loadedFont;
+                    rebuildText();
+                }
+            });
         }
 
         function buildText() {
@@ -119,18 +192,38 @@
 
             const text = 'ABCD\nEFGH\nIJKL\nMNOP\nQRST\nUVWX\nYZ01\n2345\n6789';
             const lines = text.split('\n');
-            const letterSpacing = 5.5;
-            const lineHeight = 7;
             const fontSize = 60;
+            const baseLineHeight = 7 * lineSpacingMultiplier;
             
             lines.forEach((line, lineIndex) => {
+                let currentX = 0;
+                const lineWidth = calculateLineWidth(line, fontSize);
+                currentX = -lineWidth / 2; // Center the line
+                
                 for (let i = 0; i < line.length; i++) {
                     const char = line[i];
-                    const x = i * letterSpacing - (line.length * letterSpacing) / 2 + letterSpacing / 2;
-                    const y = -lineIndex * lineHeight + (lines.length * lineHeight) / 2 - lineHeight / 2;
+                    const glyph = font.charToGlyph(char);
+                    const glyphWidth = (glyph.advanceWidth * fontSize / font.unitsPerEm) / 15;
+                    
+                    const x = currentX + glyphWidth / 2;
+                    const y = -lineIndex * baseLineHeight + (lines.length * baseLineHeight) / 2 - baseLineHeight / 2;
+                    
                     createLetterFromFont(char, x, y, 0, fontSize);
+                    
+                    // Move to next letter position using actual glyph width + spacing
+                    currentX += glyphWidth + (0.5 * letterSpacingMultiplier);
                 }
             });
+        }
+
+        function calculateLineWidth(line, fontSize) {
+            let width = 0;
+            for (let i = 0; i < line.length; i++) {
+                const glyph = font.charToGlyph(line[i]);
+                const glyphWidth = (glyph.advanceWidth * fontSize / font.unitsPerEm) / 15;
+                width += glyphWidth + (0.5 * letterSpacingMultiplier);
+            }
+            return width - (0.5 * letterSpacingMultiplier); // Remove last spacing
         }
 
         function createLetterFromFont(char, x, y, z, fontSize) {
@@ -174,10 +267,7 @@
 
             if (shapes.length === 0) return;
 
-            // For letters with holes, we need to identify which shapes are holes
-            // The largest shape by area is typically the outer shape
             if (shapes.length > 1) {
-                // Calculate approximate area for each shape to find the main outline
                 const shapesWithArea = shapes.map(shape => {
                     const points = shape.getPoints();
                     let area = 0;
@@ -189,13 +279,11 @@
                     return { shape, area: Math.abs(area) };
                 });
 
-                // Sort by area (largest first)
                 shapesWithArea.sort((a, b) => b.area - a.area);
                 
                 const mainShape = shapesWithArea[0].shape;
                 const holes = shapesWithArea.slice(1).map(s => s.shape);
                 
-                // Add holes to main shape
                 holes.forEach(hole => {
                     mainShape.holes.push(hole);
                 });
@@ -211,6 +299,15 @@
                 const geometry = new THREE.ExtrudeGeometry(mainShape, extrudeSettings);
                 geometry.rotateY(Math.PI);
                 
+                if (isItalic) {
+                    for (let i = 0; i < geometry.attributes.position.count; i++) {
+                        const y = geometry.attributes.position.getY(i);
+                        const xOffset = y * 0.2;
+                        geometry.attributes.position.setX(i, geometry.attributes.position.getX(i) + xOffset);
+                    }
+                    geometry.attributes.position.needsUpdate = true;
+                }
+                
                 const material = new THREE.MeshStandardMaterial({ 
                     color: color,
                     metalness: 0.3,
@@ -221,7 +318,6 @@
                 mesh.position.set(x, y, z);
                 textGroup.add(mesh);
             } else {
-                // Single shape, no holes
                 const extrudeSettings = {
                     depth: extrusionDepth,
                     bevelEnabled: true,
@@ -232,6 +328,15 @@
                 
                 const geometry = new THREE.ExtrudeGeometry(shapes[0], extrudeSettings);
                 geometry.rotateY(Math.PI);
+                
+                if (isItalic) {
+                    for (let i = 0; i < geometry.attributes.position.count; i++) {
+                        const y = geometry.attributes.position.getY(i);
+                        const xOffset = y * 0.2;
+                        geometry.attributes.position.setX(i, geometry.attributes.position.getX(i) + xOffset);
+                    }
+                    geometry.attributes.position.needsUpdate = true;
+                }
                 
                 const material = new THREE.MeshStandardMaterial({ 
                     color: color,
@@ -246,11 +351,10 @@
         }
 
         function buildTextSimple() {
-            // Fallback to basic shapes if font loading fails
             console.log('Using fallback simple text');
             const text = 'ABCD\nEFGH\nIJKL\nMNOP\nQRST\nUVWX\nYZ01\n2345\n6789';
             const lines = text.split('\n');
-            const letterSpacing = 4.5;
+            const letterSpacing = 4.5 * letterSpacingMultiplier;
             const lineHeight = 6;
             
             lines.forEach((line, lineIndex) => {
@@ -265,7 +369,7 @@
                     const geometry = new THREE.BoxGeometry(3, 4, extrusionDepth);
                     const material = new THREE.MeshStandardMaterial({ color: color });
                     const mesh = new THREE.Mesh(geometry, material);
-                    mesh.position.set(x, y, z);
+                    mesh.position.set(x, y, 0);
                     textGroup.add(mesh);
                 }
             });
@@ -275,9 +379,17 @@
             const rotYSlider = document.getElementById('rotY');
             const rotXSlider = document.getElementById('rotX');
             const depthSlider = document.getElementById('depth');
+            const spacingSlider = document.getElementById('spacing');
+            const lineSpacingSlider = document.getElementById('lineSpacing');
+            const fontSelect = document.getElementById('fontSelect');
+            const boldBtn = document.getElementById('boldBtn');
+            const italicBtn = document.getElementById('italicBtn');
+            
             const rotYValue = document.getElementById('rotY-value');
             const rotXValue = document.getElementById('rotX-value');
             const depthValue = document.getElementById('depth-value');
+            const spacingValue = document.getElementById('spacing-value');
+            const lineSpacingValue = document.getElementById('lineSpacing-value');
 
             rotYSlider.addEventListener('input', function() {
                 const degrees = parseInt(this.value);
@@ -294,13 +406,43 @@
             depthSlider.addEventListener('input', function() {
                 extrusionDepth = parseInt(this.value);
                 depthValue.textContent = extrusionDepth;
-                
-                while(textGroup.children.length > 0) {
-                    textGroup.remove(textGroup.children[0]);
-                }
-                
-                buildText();
+                rebuildText();
             });
+
+            spacingSlider.addEventListener('input', function() {
+                letterSpacingMultiplier = parseFloat(this.value);
+                spacingValue.textContent = letterSpacingMultiplier.toFixed(1);
+                rebuildText();
+            });
+
+            lineSpacingSlider.addEventListener('input', function() {
+                lineSpacingMultiplier = parseFloat(this.value);
+                lineSpacingValue.textContent = lineSpacingMultiplier.toFixed(1);
+                rebuildText();
+            });
+
+            fontSelect.addEventListener('change', function() {
+                currentFontUrl = this.value;
+                loadFont(currentFontUrl);
+            });
+
+            boldBtn.addEventListener('click', function() {
+                isBold = !isBold;
+                this.classList.toggle('active');
+            });
+
+            italicBtn.addEventListener('click', function() {
+                isItalic = !isItalic;
+                this.classList.toggle('active');
+                rebuildText();
+            });
+        }
+
+        function rebuildText() {
+            while(textGroup.children.length > 0) {
+                textGroup.remove(textGroup.children[0]);
+            }
+            buildText();
         }
 
         function animate() {
