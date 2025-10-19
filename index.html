@@ -137,6 +137,7 @@
         let isBold = true;
         let isItalic = false;
         let currentFontUrl = 'https://cdn.jsdelivr.net/npm/@fontsource/source-code-pro@5.0.8/files/source-code-pro-latin-700-normal.woff';
+        let raindropLights = [];
 
         function init() {
             scene = new THREE.Scene();
@@ -149,16 +150,72 @@
             renderer.setClearColor(0x1a1a2e);
             document.body.appendChild(renderer.domElement);
 
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.15);
             scene.add(ambientLight);
             
-            const directionalLight1 = new THREE.DirectionalLight(0xffffff, 0.6);
-            directionalLight1.position.set(5, 10, 7);
-            scene.add(directionalLight1);
+            // Create two point lights for sparkler raindrop effect
+            const light1 = new THREE.PointLight(0xffffdd, 2.5, 80);
+            light1.position.set(0, 50, 5);
+            light1.castShadow = true;
+            light1.shadow.mapSize.width = 2048;
+            light1.shadow.mapSize.height = 2048;
+            light1.shadow.camera.near = 0.5;
+            light1.shadow.camera.far = 80;
+            scene.add(light1);
             
-            const directionalLight2 = new THREE.DirectionalLight(0xff6b9d, 0.4);
-            directionalLight2.position.set(-5, 5, 3);
-            scene.add(directionalLight2);
+            // Add visible sphere for light1
+            const sphere1 = new THREE.Mesh(
+                new THREE.SphereGeometry(0.5, 16, 16),
+                new THREE.MeshBasicMaterial({ color: 0xffffaa })
+            );
+            light1.add(sphere1);
+            
+            const light2 = new THREE.PointLight(0xffffdd, 2.5, 80);
+            light2.position.set(0, 50, 5);
+            light2.castShadow = true;
+            light2.shadow.mapSize.width = 2048;
+            light2.shadow.mapSize.height = 2048;
+            light2.shadow.camera.near = 0.5;
+            light2.shadow.camera.far = 80;
+            scene.add(light2);
+            
+            // Add visible sphere for light2
+            const sphere2 = new THREE.Mesh(
+                new THREE.SphereGeometry(0.5, 16, 16),
+                new THREE.MeshBasicMaterial({ color: 0xffffaa })
+            );
+            light2.add(sphere2);
+
+            // Store lights for animation with physics
+            // Fire from camera position (0, 0, 60) straight towards text at (0, 0, 0)
+            raindropLights = [
+                { 
+                    light: light1, 
+                    position: new THREE.Vector3(0, 0, 50),
+                    velocity: new THREE.Vector3(
+                        (Math.random() - 0.5) * 0.1,  // Tiny X jiggle
+                        (Math.random() - 0.5) * 0.1,  // Tiny Y jiggle
+                        -1.5  // Strong velocity towards text
+                    ),
+                    baseIntensity: 2.5, 
+                    fadeOut: false,
+                    fadeFactor: 0,
+                    lifetime: 0
+                },
+                { 
+                    light: light2, 
+                    position: new THREE.Vector3(0, 0, 50),
+                    velocity: new THREE.Vector3(
+                        (Math.random() - 0.5) * 0.1,
+                        (Math.random() - 0.5) * 0.1,
+                        -1.5
+                    ),
+                    baseIntensity: 2.5, 
+                    fadeOut: false,
+                    fadeFactor: 0,
+                    lifetime: 60 // Fire second light later
+                }
+            ];
 
             textGroup = new THREE.Group();
             textGroup.rotation.y = 0;
@@ -447,7 +504,88 @@
 
         function animate() {
             requestAnimationFrame(animate);
+            
+            const gravity = new THREE.Vector3(0, -0.015, 0); // Gravity pointing down
+            const maxLifetime = 180; // Frames before reset (~3 seconds at 60fps)
+            
+            raindropLights.forEach(drop => {
+                drop.lifetime++;
+                
+                // Apply gravity to velocity
+                drop.velocity.add(gravity);
+                
+                // Update position based on velocity
+                drop.position.add(drop.velocity);
+                
+                // Check collision with text meshes
+                textGroup.children.forEach(letterMesh => {
+                    if (checkCollision(drop.position, letterMesh)) {
+                        handleCollision(drop, letterMesh);
+                    }
+                });
+                
+                // Fade out if too old, too far, or too slow
+                const speed = drop.velocity.length();
+                const tooFar = drop.position.z > 60 || drop.position.z < -20 || 
+                              Math.abs(drop.position.x) > 50 || Math.abs(drop.position.y) > 50;
+                
+                if (drop.lifetime > maxLifetime || tooFar || speed < 0.05) {
+                    drop.fadeOut = true;
+                }
+                
+                // Apply fade
+                if (drop.fadeOut) {
+                    drop.fadeFactor -= 0.03;
+                    if (drop.fadeFactor <= 0) {
+                        // Reset light - fire from camera position towards text
+                        drop.position.set(0, 0, 40);
+                        drop.velocity.set(
+                            (Math.random() - 0.5) * 0.5, 
+                            (Math.random() - 0.5) * 0.5, 
+                            -0.8
+                        );
+                        drop.fadeOut = false;
+                        drop.fadeFactor = 0;
+                        drop.lifetime = 0;
+                    }
+                } else {
+                    drop.fadeFactor = Math.min(1.0, drop.fadeFactor + 0.05);
+                }
+                
+                // Sparkler flicker effect
+                const flicker = 0.7 + Math.random() * 0.6;
+                drop.light.intensity = drop.baseIntensity * flicker * drop.fadeFactor;
+                
+                // Update light position
+                drop.light.position.copy(drop.position);
+            });
+            
             renderer.render(scene, camera);
+        }
+
+        function checkCollision(position, mesh) {
+            const box = new THREE.Box3().setFromObject(mesh);
+            return box.containsPoint(position);
+        }
+
+        function handleCollision(drop, mesh) {
+            const box = new THREE.Box3().setFromObject(mesh);
+            const center = new THREE.Vector3();
+            box.getCenter(center);
+            
+            // Calculate normal from collision
+            const normal = new THREE.Vector3().subVectors(drop.position, center).normalize();
+            
+            // Reflect velocity: v_new = v - 2(v·n)n
+            const dotProduct = drop.velocity.dot(normal);
+            const reflection = normal.clone().multiplyScalar(2 * dotProduct);
+            drop.velocity.sub(reflection);
+            
+            // Apply damping
+            drop.velocity.multiplyScalar(0.75);
+            
+            // Push out of collision
+            drop.position.add(normal.multiplyScalar(0.5));
         }
 
         function onWindowResize() {
