@@ -124,6 +124,10 @@
             <label>Extrusion Depth (1-150): <span class="value-display" id="depth-value">20</span></label>
             <input type="range" id="depth" min="1" max="150" value="20" step="1">
         </div>
+        <div class="control-group">
+            <label>Z Offset (0-150): <span class="value-display" id="zOffset-value">10</span></label>
+            <input type="range" id="zOffset" min="0" max="150" value="10" step="1">
+        </div>
     </div>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -131,6 +135,7 @@
     <script>
         let scene, camera, renderer, textGroup;
         let extrusionDepth = 20;
+        let zOffsetMultiplier = 10;
         let font = null;
         let letterSpacingMultiplier = 1.0;
         let lineSpacingMultiplier = 1.0;
@@ -266,8 +271,8 @@
                     const x = currentX + glyphWidth / 2;
                     const y = -lineIndex * baseLineHeight + (lines.length * baseLineHeight) / 2 - baseLineHeight / 2;
                     
-                    // Apply random Z offset, scaled by extrusionDepth
-                    const zOffset = letterDepthOffsets[charIndex] * extrusionDepth * 0.5;
+                    // Apply random Z offset using zOffsetMultiplier (NOT extrusionDepth)
+                    const zOffset = letterDepthOffsets[charIndex] * zOffsetMultiplier * 0.5;
                     
                     createLetterFromFont(char, x, y, zOffset, fontSize);
                     
@@ -438,7 +443,7 @@
                     const char = line[i];
                     const x = i * letterSpacing - (line.length * letterSpacing) / 2 + letterSpacing / 2;
                     const y = -lineIndex * lineHeight + (lines.length * lineHeight) / 2 - lineHeight / 2;
-                    const z = letterDepthOffsets[charIndex] * extrusionDepth * 0.5;
+                    const z = letterDepthOffsets[charIndex] * zOffsetMultiplier * 0.5;
                     
                     const colors = [0xD4789C, 0xD4A95A, 0x6BA3C3, 0xE67E9F, 0xF4B860, 0x5A9BC4];
                     const color = colors[char.charCodeAt(0) % colors.length];
@@ -460,6 +465,7 @@
             const rotYSlider = document.getElementById('rotY');
             const rotXSlider = document.getElementById('rotX');
             const depthSlider = document.getElementById('depth');
+            const zOffsetSlider = document.getElementById('zOffset');
             const spacingSlider = document.getElementById('spacing');
             const lineSpacingSlider = document.getElementById('lineSpacing');
             const fontSelect = document.getElementById('fontSelect');
@@ -469,6 +475,7 @@
             const rotYValue = document.getElementById('rotY-value');
             const rotXValue = document.getElementById('rotX-value');
             const depthValue = document.getElementById('depth-value');
+            const zOffsetValue = document.getElementById('zOffset-value');
             const spacingValue = document.getElementById('spacing-value');
             const lineSpacingValue = document.getElementById('lineSpacing-value');
 
@@ -487,6 +494,12 @@
             depthSlider.addEventListener('input', function() {
                 extrusionDepth = parseInt(this.value);
                 depthValue.textContent = extrusionDepth;
+                rebuildText();
+            });
+
+            zOffsetSlider.addEventListener('input', function() {
+                zOffsetMultiplier = parseInt(this.value);
+                zOffsetValue.textContent = zOffsetMultiplier;
                 rebuildText();
             });
 
