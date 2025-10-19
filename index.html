@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Text Test</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>3D Text Test — Modernized</title>
     <style>
         body {
             margin: 0;
@@ -124,265 +124,327 @@
             <button class="toggle-btn" id="toggleControls">Minimize</button>
         </div>
         <div class="control-content">
-        <div class="control-group">
-            <label>Font:</label>
-            <select id="fontSelect">
-                <option value="https://cdn.jsdelivr.net/npm/@fontsource/source-code-pro@5.0.8/files/source-code-pro-latin-700-normal.woff">Source Code Pro Bold</option>
-                <option value="https://cdn.jsdelivr.net/npm/@fontsource/roboto@5.0.8/files/roboto-latin-700-normal.woff">Roboto Bold</option>
-                <option value="https://cdn.jsdelivr.net/npm/@fontsource/open-sans@5.0.17/files/open-sans-latin-700-normal.woff">Open Sans Bold</option>
-                <option value="https://cdn.jsdelivr.net/npm/@fontsource/pacifico@5.0.10/files/pacifico-latin-400-normal.woff">Pacifico</option>
-                <option value="https://cdn.jsdelivr.net/npm/@fontsource/permanent-marker@5.0.9/files/permanent-marker-latin-400-normal.woff">Permanent Marker</option>
-                <option value="https://cdn.jsdelivr.net/npm/@fontsource/indie-flower@5.0.10/files/indie-flower-latin-400-normal.woff">Indie Flower</option>
-                <option value="https://cdn.jsdelivr.net/npm/@fontsource/press-start-2p@5.0.9/files/press-start-2p-latin-400-normal.woff">Press Start 2P</option>
-                <option value="https://cdn.jsdelivr.net/npm/@fontsource/anton@5.0.17/files/anton-latin-400-normal.woff">Anton</option>
-                <option value="https://cdn.jsdelivr.net/npm/@fontsource/righteous@5.0.17/files/righteous-latin-400-normal.woff">Righteous</option>
-            </select>
-        </div>
-        <div class="control-group">
-            <label>Font Style:</label>
-            <div class="button-group">
-                <button id="boldBtn" class="active">Bold</button>
-                <button id="italicBtn">Italic</button>
+            <div class="control-group">
+                <label>Font:</label>
+                <select id="fontSelect">
+                    <option value="https://cdn.jsdelivr.net/npm/@fontsource/source-code-pro@5.0.8/files/source-code-pro-latin-700-normal.woff">Source Code Pro Bold</option>
+                    <option value="https://cdn.jsdelivr.net/npm/@fontsource/roboto@5.0.8/files/roboto-latin-700-normal.woff">Roboto Bold</option>
+                    <option value="https://cdn.jsdelivr.net/npm/@fontsource/open-sans@5.0.17/files/open-sans-latin-700-normal.woff">Open Sans Bold</option>
+                    <option value="https://cdn.jsdelivr.net/npm/@fontsource/pacifico@5.0.10/files/pacifico-latin-400-normal.woff">Pacifico</option>
+                    <option value="https://cdn.jsdelivr.net/npm/@fontsource/permanent-marker@5.0.9/files/permanent-marker-latin-400-normal.woff">Permanent Marker</option>
+                    <option value="https://cdn.jsdelivr.net/npm/@fontsource/indie-flower@5.0.10/files/indie-flower-latin-400-normal.woff">Indie Flower</option>
+                    <option value="https://cdn.jsdelivr.net/npm/@fontsource/press-start-2p@5.0.9/files/press-start-2p-latin-400-normal.woff">Press Start 2P</option>
+                    <option value="https://cdn.jsdelivr.net/npm/@fontsource/anton@5.0.17/files/anton-latin-400-normal.woff">Anton</option>
+                    <option value="https://cdn.jsdelivr.net/npm/@fontsource/righteous@5.0.17/files/righteous-latin-400-normal.woff">Righteous</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label>Font Style:</label>
+                <div class="button-group">
+                    <button id="boldBtn" class="active">Bold</button>
+                    <button id="italicBtn">Italic</button>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label>Letter Spacing: <span class="value-display" id="spacing-value">1.0</span></label>
+                <input type="range" id="spacing" min="0" max="3" value="1" step="0.1">
+            </div>
+
+            <div class="control-group">
+                <label>Line Spacing: <span class="value-display" id="lineSpacing-value">0.5</span></label>
+                <input type="range" id="lineSpacing" min="0.5" max="3" value="0.5" step="0.1">
+            </div>
+
+            <div class="control-group">
+                <label>Rotation Y (0-360°): <span class="value-display" id="rotY-value">19°</span></label>
+                <input type="range" id="rotY" min="0" max="360" value="19" step="1">
+            </div>
+
+            <div class="control-group">
+                <label>Rotation X (-90 to 90°): <span class="value-display" id="rotX-value">-14°</span></label>
+                <input type="range" id="rotX" min="-90" max="90" value="-14" step="1">
+            </div>
+
+            <div class="control-group">
+                <label>Extrusion Depth (1-500): <span class="value-display" id="depth-value">500</span></label>
+                <input type="range" id="depth" min="1" max="500" value="500" step="1">
+            </div>
+
+            <div class="control-group">
+                <label>Z Offset (0-150): <span class="value-display" id="zOffset-value">5</span></label>
+                <input type="range" id="zOffset" min="0" max="150" value="5" step="1">
             </div>
         </div>
-        <div class="control-group">
-            <label>Letter Spacing: <span class="value-display" id="spacing-value">1.0</span></label>
-            <input type="range" id="spacing" min="0" max="3" value="1" step="0.1">
-        </div>
-        <div class="control-group">
-            <label>Line Spacing: <span class="value-display" id="lineSpacing-value">0.5</span></label>
-            <input type="range" id="lineSpacing" min="0.5" max="3" value="0.5" step="0.1">
-        </div>
-        <div class="control-group">
-            <label>Rotation Y (0-360°): <span class="value-display" id="rotY-value">19°</span></label>
-            <input type="range" id="rotY" min="0" max="360" value="19" step="1">
-        </div>
-        <div class="control-group">
-            <label>Rotation X (-90 to 90°): <span class="value-display" id="rotX-value">-14°</span></label>
-            <input type="range" id="rotX" min="-90" max="90" value="-14" step="1">
-        </div>
-        <div class="control-group">
-            <label>Extrusion Depth (1-500): <span class="value-display" id="depth-value">500</span></label>
-            <input type="range" id="depth" min="1" max="500" value="500" step="1">
-        </div>
-        <div class="control-group">
-            <label>Z Offset (0-150): <span class="value-display" id="zOffset-value">5</span></label>
-            <input type="range" id="zOffset" min="0" max="150" value="5" step="1">
-        </div>
-        </div>
     </div>
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <!-- Updated Three.js (modern build) and OpenType.js (unchanged) -->
+    <script src="https://unpkg.com/three@0.170.0/build/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/opentype.js/1.3.4/opentype.min.js"></script>
+
     <script>
-        let scene, camera, renderer, textGroup;
-        let extrusionDepth = 500; // updated default
-        let zOffsetMultiplier = 5; // updated default
-        let font = null;
-        let letterSpacingMultiplier = 1.0;
-        let lineSpacingMultiplier = 0.5;
-        let isBold = true;
-        let isItalic = false;
-        let currentFontUrl = 'https://cdn.jsdelivr.net/npm/@fontsource/source-code-pro@5.0.8/files/source-code-pro-latin-700-normal.woff';
-        let raindropLights = [];
-        let letterDepthOffsets = {};
-        let lightPool = [];
+    /**************************************************************************
+     * Modernized + optimized version (keeps OpenType.js)
+     *
+     * Perf notes:
+     * - geometryCache avoids re-extruding same glyph many times
+     * - capped devicePixelRatio
+     * - reduced sphere detail for light markers
+     *************************************************************************/
 
-        function init() {
-            scene = new THREE.Scene();
-            
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.set(0, 0, 60);
-            
-            renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setClearColor(0x1a1a2e);
-            document.body.appendChild(renderer.domElement);
+    let scene, camera, renderer, textGroup;
+    let extrusionDepth = 500; // updated default
+    let zOffsetMultiplier = 5; // updated default
+    let font = null;
+    let letterSpacingMultiplier = 1.0;
+    let lineSpacingMultiplier = 0.5;
+    let isBold = true;
+    let isItalic = false;
+    let currentFontUrl = 'https://cdn.jsdelivr.net/npm/@fontsource/source-code-pro@5.0.8/files/source-code-pro-latin-700-normal.woff';
+    let raindropLights = [];
+    let letterDepthOffsets = {};
+    let lightPool = []; // pool
+    const geometryCache = new Map(); // key => BufferGeometry (cached extruded glyph)
 
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.15);
-            scene.add(ambientLight);
-            
-            // ground plane 500x500
-            const planeGeometry = new THREE.PlaneGeometry(500, 500);
-            const planeMaterial = new THREE.MeshStandardMaterial({ 
-                color: 0x2a2a3e,
-                metalness: 0.1,
-                roughness: 0.8
-            });
-            const groundPlane = new THREE.Mesh(planeGeometry, planeMaterial);
-            groundPlane.rotation.x = -Math.PI / 2;
-            groundPlane.position.y = -32;
-            groundPlane.receiveShadow = true;
-            scene.add(groundPlane);
-            
-            const neonColors = [0x00ffff, 0x00ff00, 0xffffff];
-            
-            const light1Color = neonColors[Math.floor(Math.random() * neonColors.length)];
-            const light1 = new THREE.PointLight(light1Color, 2.5, 80);
-            light1.position.set(0, 50, 5);
-            light1.castShadow = true;
-            scene.add(light1);
-            const sphere1 = new THREE.Mesh(
-                new THREE.SphereGeometry(0.5, 16, 16),
-                new THREE.MeshBasicMaterial({ color: light1Color })
+    function init() {
+        scene = new THREE.Scene();
+
+        camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 0, 60);
+
+        renderer = new THREE.WebGLRenderer({ antialias: true });
+        // limit pixel ratio to avoid huge GPU loads on high-DPI displays
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0x1a1a2e);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        document.body.appendChild(renderer.domElement);
+
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.15);
+        scene.add(ambientLight);
+
+        // ground plane (500x500)
+        const planeGeometry = new THREE.PlaneGeometry(500, 500);
+        const planeMaterial = new THREE.MeshStandardMaterial({
+            color: 0x2a2a3e,
+            metalness: 0.1,
+            roughness: 0.8
+        });
+        const groundPlane = new THREE.Mesh(planeGeometry, planeMaterial);
+        groundPlane.rotation.x = -Math.PI / 2;
+        groundPlane.position.y = -32;
+        groundPlane.receiveShadow = true;
+        scene.add(groundPlane);
+
+        const neonColors = [0x00ffff, 0x00ff00, 0xffffff];
+
+        const light1Color = neonColors[Math.floor(Math.random() * neonColors.length)];
+        const light1 = new THREE.PointLight(light1Color, 2.5, 80);
+        light1.position.set(0, 50, 5);
+        light1.castShadow = true;
+        scene.add(light1);
+
+        const sphere1 = new THREE.Mesh(
+            new THREE.SphereGeometry(0.4, 8, 8), // lower detail sphere
+            new THREE.MeshBasicMaterial({ color: light1Color })
+        );
+        light1.add(sphere1);
+
+        const light2Color = neonColors[Math.floor(Math.random() * neonColors.length)];
+        const light2 = new THREE.PointLight(light2Color, 2.5, 80);
+        light2.position.set(0, 50, 5);
+        light2.castShadow = true;
+        scene.add(light2);
+
+        const sphere2 = new THREE.Mesh(
+            new THREE.SphereGeometry(0.4, 8, 8),
+            new THREE.MeshBasicMaterial({ color: light2Color })
+        );
+        light2.add(sphere2);
+
+        // Pre-create a larger pool (30 lights) — kept as point lights, start with 0 intensity
+        for (let i = 0; i < 30; i++) {
+            const lightColor = neonColors[Math.floor(Math.random() * neonColors.length)];
+            const light = new THREE.PointLight(lightColor, 0, 80);
+            light.position.set(0, 0, 60);
+            light.castShadow = true;
+            scene.add(light);
+
+            const sphere = new THREE.Mesh(
+                new THREE.SphereGeometry(0.4, 8, 8),
+                new THREE.MeshBasicMaterial({ color: lightColor })
             );
-            light1.add(sphere1);
-            
-            const light2Color = neonColors[Math.floor(Math.random() * neonColors.length)];
-            const light2 = new THREE.PointLight(light2Color, 2.5, 80);
-            light2.position.set(0, 50, 5);
-            light2.castShadow = true;
-            scene.add(light2);
-            const sphere2 = new THREE.Mesh(
-                new THREE.SphereGeometry(0.5, 16, 16),
-                new THREE.MeshBasicMaterial({ color: light2Color })
-            );
-            light2.add(sphere2);
+            light.add(sphere);
 
-            // Pre-create 30 lights
-            for (let i = 0; i < 30; i++) {
-                const lightColor = neonColors[Math.floor(Math.random() * neonColors.length)];
-                const light = new THREE.PointLight(lightColor, 0, 80);
-                light.position.set(0, 0, 60);
-                light.castShadow = true;
-                scene.add(light);
-                const sphere = new THREE.Mesh(
-                    new THREE.SphereGeometry(0.5, 16, 16),
-                    new THREE.MeshBasicMaterial({ color: lightColor })
-                );
-                light.add(sphere);
-                lightPool.push({ light: light, color: lightColor, inUse: false });
+            lightPool.push({ light: light, color: lightColor, inUse: false });
+        }
+
+        // initial raindropLights (two "active" lights like before)
+        raindropLights = [
+            {
+                light: light1,
+                position: new THREE.Vector3(0, 0, 60),
+                velocity: new THREE.Vector3(0, 0, 0),
+                baseIntensity: 2.5,
+                fadeOut: false,
+                fadeFactor: 0,
+                lifetime: 0,
+                isStable: false,
+                stableTime: 0
+            },
+            {
+                light: light2,
+                position: new THREE.Vector3(0, 0, 60),
+                velocity: new THREE.Vector3(0, 0, 0),
+                baseIntensity: 2.5,
+                fadeOut: false,
+                fadeFactor: 0,
+                lifetime: -1,
+                isStable: false,
+                stableTime: 0
             }
+        ];
 
-            raindropLights = [
-                { light: light1, position: new THREE.Vector3(0, 0, 60), velocity: new THREE.Vector3(0, 0, 0), baseIntensity: 2.5, fadeOut: false, fadeFactor: 0, lifetime: 0, isStable: false, stableTime: 0 },
-                { light: light2, position: new THREE.Vector3(0, 0, 60), velocity: new THREE.Vector3(0, 0, 0), baseIntensity: 2.5, fadeOut: false, fadeFactor: 0, lifetime: -1, isStable: false, stableTime: 0 }
-            ];
+        textGroup = new THREE.Group();
+        // set default rotations requested
+        textGroup.rotation.y = 19 * Math.PI / 180;
+        textGroup.rotation.x = -14 * Math.PI / 180;
+        scene.add(textGroup);
 
-            textGroup = new THREE.Group();
-            // updated default rotations
-            textGroup.rotation.y = 19 * Math.PI / 180;
-            textGroup.rotation.x = -14 * Math.PI / 180;
-            scene.add(textGroup);
+        loadFont(currentFontUrl);
+        setupControls();
+        window.addEventListener('resize', onWindowResize);
 
-            loadFont(currentFontUrl);
-            setupControls();
-            window.addEventListener('resize', onWindowResize);
-            animate();
-        }
+        animate();
+    }
 
-        function loadFont(url) {
-            opentype.load(url, function(err, loadedFont) {
-                if (err) {
-                    console.error('Font loading error:', err);
-                    buildTextSimple();
-                } else {
-                    font = loadedFont;
-                    rebuildText();
-                }
-            });
-        }
-
-        function buildText() {
-            if (!font) {
+    /* -------------------------
+       Font loading + text building
+       ------------------------- */
+    function loadFont(url) {
+        opentype.load(url, function (err, loadedFont) {
+            if (err) {
+                console.error('Font loading error:', err);
                 buildTextSimple();
-                return;
+            } else {
+                font = loadedFont;
+                // clear cache when font changes (cache keyed partly by font path implicitly)
+                geometryCache.clear();
+                rebuildText();
             }
+        });
+    }
 
-            const text = 'ABCD\nEFGH\nIJKL\nMNOP\nQRST\nUVWX\nYZ01\n2345\n6789';
-            const lines = text.split('\n');
-            const fontSize = 60;
-            const baseLineHeight = 7 * lineSpacingMultiplier;
-            
-            // Generate random offsets if none exist
-            if (Object.keys(letterDepthOffsets).length === 0) {
-                console.log('Generating Z offsets for letters');
-                let index = 0;
-                lines.forEach(line => {
-                    for (let i = 0; i < line.length; i++) {
-                        letterDepthOffsets[index] = (Math.random() - 0.5) * 2;
-                        index++;
-                    }
-                });
-            }
-            
-            let charIndex = 0;
-            lines.forEach((line, lineIndex) => {
-                let currentX = 0;
-                const lineWidth = calculateLineWidth(line, fontSize);
-                currentX = -lineWidth / 2;
-                
+    function buildText() {
+        if (!font) {
+            buildTextSimple();
+            return;
+        }
+
+        const text = 'ABCD\nEFGH\nIJKL\nMNOP\nQRST\nUVWX\nYZ01\n2345\n6789';
+        const lines = text.split('\n');
+        const fontSize = 60;
+        const baseLineHeight = 7 * lineSpacingMultiplier;
+
+        // Generate Z offsets if none exist
+        if (Object.keys(letterDepthOffsets).length === 0) {
+            let index = 0;
+            lines.forEach(line => {
                 for (let i = 0; i < line.length; i++) {
-                    const char = line[i];
-                    const glyph = font.charToGlyph(char);
-                    const glyphWidth = (glyph.advanceWidth * fontSize / font.unitsPerEm) / 15;
-                    
-                    const x = currentX + glyphWidth / 2;
-                    // Position from bottom up: bottom line at y=-28 (4 units above ground at -32)
-                    const y = -28 + (lines.length - 1 - lineIndex) * baseLineHeight;
-                    
-                    // Apply random Z offset using zOffsetMultiplier (NOT extrusionDepth)
-                    const zOffset = letterDepthOffsets[charIndex] * zOffsetMultiplier * 0.5;
-                    
-                    createLetterFromFont(char, x, y, zOffset, fontSize);
-                    
-                    currentX += glyphWidth + (0.5 * letterSpacingMultiplier);
-                    charIndex++;
+                    letterDepthOffsets[index] = (Math.random() - 0.5) * 2;
+                    index++;
                 }
             });
         }
 
-        function calculateLineWidth(line, fontSize) {
-            let width = 0;
+        let charIndex = 0;
+        lines.forEach((line, lineIndex) => {
+            let currentX = 0;
+            const lineWidth = calculateLineWidth(line, fontSize);
+            currentX = -lineWidth / 2;
+
             for (let i = 0; i < line.length; i++) {
-                const glyph = font.charToGlyph(line[i]);
+                const char = line[i];
+                const glyph = font.charToGlyph(char);
                 const glyphWidth = (glyph.advanceWidth * fontSize / font.unitsPerEm) / 15;
-                width += glyphWidth + (0.5 * letterSpacingMultiplier);
+
+                const x = currentX + glyphWidth / 2;
+                // Position from bottom up: bottom line at y=-28 (4 units above ground at -32)
+                const y = -28 + (lines.length - 1 - lineIndex) * baseLineHeight;
+
+                // Apply random Z offset using zOffsetMultiplier
+                const zOffset = letterDepthOffsets[charIndex] * zOffsetMultiplier * 0.5;
+
+                createLetterFromFont(char, x, y, zOffset, fontSize);
+
+                currentX += glyphWidth + (0.5 * letterSpacingMultiplier);
+                charIndex++;
             }
-            return width - (0.5 * letterSpacingMultiplier);
+        });
+    }
+
+    function calculateLineWidth(line, fontSize) {
+        let width = 0;
+        for (let i = 0; i < line.length; i++) {
+            const glyph = font.charToGlyph(line[i]);
+            const glyphWidth = (glyph.advanceWidth * fontSize / font.unitsPerEm) / 15;
+            width += glyphWidth + (0.5 * letterSpacingMultiplier);
         }
+        return width - (0.5 * letterSpacingMultiplier);
+    }
 
-        function createLetterFromFont(char, x, y, z, fontSize) {
-            const colors = [0xD4789C, 0xD4A95A, 0x6BA3C3, 0xE67E9F, 0xF4B860, 0x5A9BC4];
-            const color = colors[char.charCodeAt(0) % colors.length];
+    // Cache-aware glyph extruder
+    function createLetterFromFont(char, x, y, z, fontSize) {
+        if (!font) return;
 
+        // Color selection (same algorithm)
+        const colors = [0xD4789C, 0xD4A95A, 0x6BA3C3, 0xE67E9F, 0xF4B860, 0x5A9BC4];
+        const color = colors[char.charCodeAt(0) % colors.length];
+
+        // Build cache key: char + depth + italic + fontSize
+        const key = `${char}_d${extrusionDepth}_i${isItalic ? 1 : 0}_f${fontSize}`;
+
+        let geometry;
+        if (geometryCache.has(key)) {
+            // Reuse cached geometry (cheap clone)
+            geometry = geometryCache.get(key).clone();
+        } else {
+            // Build shapes via opentype path -> THREE.Shape
             const glyph = font.charToGlyph(char);
             const path = glyph.getPath(0, 0, fontSize);
-            
+
             const shapes = [];
             let currentShape = null;
-            
+
             path.commands.forEach((cmd) => {
                 if (cmd.type === 'M') {
-                    if (currentShape) {
-                        shapes.push(currentShape);
-                    }
+                    if (currentShape) shapes.push(currentShape);
                     currentShape = new THREE.Shape();
                     currentShape.moveTo(-cmd.x / 15, -cmd.y / 15);
                 } else if (cmd.type === 'L') {
-                    currentShape.lineTo(-cmd.x / 15, -cmd.y / 15);
+                    if (currentShape) currentShape.lineTo(-cmd.x / 15, -cmd.y / 15);
                 } else if (cmd.type === 'C') {
-                    currentShape.bezierCurveTo(
+                    if (currentShape) currentShape.bezierCurveTo(
                         -cmd.x1 / 15, -cmd.y1 / 15,
                         -cmd.x2 / 15, -cmd.y2 / 15,
                         -cmd.x / 15, -cmd.y / 15
                     );
                 } else if (cmd.type === 'Q') {
-                    currentShape.quadraticCurveTo(
+                    if (currentShape) currentShape.quadraticCurveTo(
                         -cmd.x1 / 15, -cmd.y1 / 15,
                         -cmd.x / 15, -cmd.y / 15
                     );
                 } else if (cmd.type === 'Z') {
-                    currentShape.closePath();
+                    if (currentShape) currentShape.closePath();
                 }
             });
-            
-            if (currentShape) {
-                shapes.push(currentShape);
-            }
-
+            if (currentShape) shapes.push(currentShape);
             if (shapes.length === 0) return;
 
+            // If multiple shapes, treat as holes and main shape
+            let finalShape;
             if (shapes.length > 1) {
                 const shapesWithArea = shapes.map(shape => {
                     const points = shape.getPoints();
@@ -394,457 +456,405 @@
                     }
                     return { shape, area: Math.abs(area) };
                 });
-
                 shapesWithArea.sort((a, b) => b.area - a.area);
-                
-                const mainShape = shapesWithArea[0].shape;
+                finalShape = shapesWithArea[0].shape;
                 const holes = shapesWithArea.slice(1).map(s => s.shape);
-                
-                holes.forEach(hole => {
-                    mainShape.holes.push(hole);
-                });
-
-                const extrudeSettings = {
-                    depth: extrusionDepth,
-                    bevelEnabled: true,
-                    bevelThickness: 0.2,
-                    bevelSize: 0.1,
-                    bevelSegments: 2
-                };
-                
-                const geometry = new THREE.ExtrudeGeometry(mainShape, extrudeSettings);
-                geometry.rotateY(Math.PI);
-                
-                if (isItalic) {
-                    for (let i = 0; i < geometry.attributes.position.count; i++) {
-                        const y = geometry.attributes.position.getY(i);
-                        const xOffset = y * 0.2;
-                        geometry.attributes.position.setX(i, geometry.attributes.position.getX(i) + xOffset);
-                    }
-                    geometry.attributes.position.needsUpdate = true;
-                }
-                
-                const material = new THREE.MeshStandardMaterial({ 
-                    color: color,
-                    metalness: 0.3,
-                    roughness: 0.4
-                });
-                
-                const mesh = new THREE.Mesh(geometry, material);
-                mesh.position.set(x, y, z);
-                mesh.castShadow = true;
-                mesh.receiveShadow = true;
-                textGroup.add(mesh);
+                holes.forEach(h => finalShape.holes.push(h));
             } else {
-                const extrudeSettings = {
-                    depth: extrusionDepth,
-                    bevelEnabled: true,
-                    bevelThickness: 0.2,
-                    bevelSize: 0.1,
-                    bevelSegments: 2
-                };
-                
-                const geometry = new THREE.ExtrudeGeometry(shapes[0], extrudeSettings);
-                geometry.rotateY(Math.PI);
-                
-                if (isItalic) {
-                    for (let i = 0; i < geometry.attributes.position.count; i++) {
-                        const y = geometry.attributes.position.getY(i);
-                        const xOffset = y * 0.2;
-                        geometry.attributes.position.setX(i, geometry.attributes.position.getX(i) + xOffset);
-                    }
-                    geometry.attributes.position.needsUpdate = true;
-                }
-                
-                const material = new THREE.MeshStandardMaterial({ 
-                    color: color,
-                    metalness: 0.3,
-                    roughness: 0.4
-                });
-                
-                const mesh = new THREE.Mesh(geometry, material);
-                mesh.position.set(x, y, z);
-                mesh.castShadow = true;
-                mesh.receiveShadow = true;
-                textGroup.add(mesh);
+                finalShape = shapes[0];
             }
-        }
 
-        function buildTextSimple() {
-            console.log('Using fallback simple text');
-            const text = 'ABCD\nEFGH\nIJKL\nMNOP\nQRST\nUVWX\nYZ01\n2345\n6789';
-            const lines = text.split('\n');
-            const letterSpacing = 4.5 * letterSpacingMultiplier;
-            const lineHeight = 6;
-            
-            if (Object.keys(letterDepthOffsets).length === 0) {
-                let charIndex = 0;
-                lines.forEach((line) => {
-                    for (let i = 0; i < line.length; i++) {
-                        letterDepthOffsets[charIndex] = (Math.random() - 0.5) * 2;
-                        charIndex++;
-                    }
-                });
+            const extrudeSettings = {
+                depth: extrusionDepth,
+                bevelEnabled: true,
+                bevelThickness: Math.min(0.2, extrusionDepth * 0.0008), // small adaptation if depth is huge
+                bevelSize: Math.min(0.1, extrusionDepth * 0.0006),
+                bevelSegments: 2
+            };
+
+            // Create extruded geometry (returns BufferGeometry in modern Three.js)
+            geometry = new THREE.ExtrudeGeometry(finalShape, extrudeSettings);
+            geometry.rotateY(Math.PI);
+
+            // Apply italic skew by modifying position attribute (still reasonable)
+            if (isItalic) {
+                const posAttr = geometry.attributes.position;
+                for (let i = 0; i < posAttr.count; i++) {
+                    const vy = posAttr.getY(i);
+                    const xOffset = vy * 0.2;
+                    posAttr.setX(i, posAttr.getX(i) + xOffset);
+                }
+                posAttr.needsUpdate = true;
             }
-            
+
+            // compute bounding box once here for collisions
+            geometry.computeBoundingBox();
+
+            // Save to cache (store a cloned copy to avoid later mutations affecting cached geometry)
+            geometryCache.set(key, geometry.clone());
+        } // end cache logic
+
+        // Material per letter (cheap)
+        const material = new THREE.MeshStandardMaterial({
+            color: color,
+            metalness: 0.3,
+            roughness: 0.4
+        });
+
+        const mesh = new THREE.Mesh(geometry, material);
+        mesh.position.set(x, y, z);
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+        textGroup.add(mesh);
+    }
+
+    function buildTextSimple() {
+        console.log('Using fallback simple text');
+        const text = 'ABCD\nEFGH\nIJKL\nMNOP\nQRST\nUVWX\nYZ01\n2345\n6789';
+        const lines = text.split('\n');
+        const letterSpacing = 4.5 * letterSpacingMultiplier;
+        const lineHeight = 6;
+
+        if (Object.keys(letterDepthOffsets).length === 0) {
             let charIndex = 0;
-            lines.forEach((line, lineIndex) => {
+            lines.forEach((line) => {
                 for (let i = 0; i < line.length; i++) {
-                    const char = line[i];
-                    const x = i * letterSpacing - (line.length * letterSpacing) / 2 + letterSpacing / 2;
-                    const y = -lineIndex * lineHeight + (lines.length * lineHeight) / 2 - lineHeight / 2;
-                    const z = letterDepthOffsets[charIndex] * zOffsetMultiplier * 0.5;
-                    
-                    const colors = [0xD4789C, 0xD4A95A, 0x6BA3C3, 0xE67E9F, 0xF4B860, 0x5A9BC4];
-                    const color = colors[char.charCodeAt(0) % colors.length];
-                    
-                    const geometry = new THREE.BoxGeometry(3, 4, extrusionDepth);
-                    const material = new THREE.MeshStandardMaterial({ color: color });
-                    const mesh = new THREE.Mesh(geometry, material);
-                    mesh.position.set(x, y, z);
-                    mesh.castShadow = true;
-                    mesh.receiveShadow = true;
-                    textGroup.add(mesh);
-                    
+                    letterDepthOffsets[charIndex] = (Math.random() - 0.5) * 2;
                     charIndex++;
                 }
             });
         }
 
-        function setupControls() {
-            const toggleBtn = document.getElementById('toggleControls');
-            const controlsPanel = document.getElementById('controls');
-            
-            toggleBtn.addEventListener('click', function() {
-                controlsPanel.classList.toggle('minimized');
-                this.textContent = controlsPanel.classList.contains('minimized') ? 'Expand' : 'Minimize';
-            });
-            
-            const rotYSlider = document.getElementById('rotY');
-            const rotXSlider = document.getElementById('rotX');
-            const depthSlider = document.getElementById('depth');
-            const zOffsetSlider = document.getElementById('zOffset');
-            const spacingSlider = document.getElementById('spacing');
-            const lineSpacingSlider = document.getElementById('lineSpacing');
-            const fontSelect = document.getElementById('fontSelect');
-            const boldBtn = document.getElementById('boldBtn');
-            const italicBtn = document.getElementById('italicBtn');
-            
-            const rotYValue = document.getElementById('rotY-value');
-            const rotXValue = document.getElementById('rotX-value');
-            const depthValue = document.getElementById('depth-value');
-            const zOffsetValue = document.getElementById('zOffset-value');
-            const spacingValue = document.getElementById('spacing-value');
-            const lineSpacingValue = document.getElementById('lineSpacing-value');
+        let charIndex = 0;
+        lines.forEach((line, lineIndex) => {
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                const x = i * letterSpacing - (line.length * letterSpacing) / 2 + letterSpacing / 2;
+                const y = -lineIndex * lineHeight + (lines.length * lineHeight) / 2 - lineHeight / 2;
+                const z = letterDepthOffsets[charIndex] * zOffsetMultiplier * 0.5;
 
-            rotYSlider.addEventListener('input', function() {
-                const degrees = parseInt(this.value);
-                textGroup.rotation.y = degrees * Math.PI / 180;
-                rotYValue.textContent = degrees + '°';
-            });
+                const colors = [0xD4789C, 0xD4A95A, 0x6BA3C3, 0xE67E9F, 0xF4B860, 0x5A9BC4];
+                const color = colors[char.charCodeAt(0) % colors.length];
 
-            rotXSlider.addEventListener('input', function() {
-                const degrees = parseInt(this.value);
-                textGroup.rotation.x = degrees * Math.PI / 180;
-                rotXValue.textContent = degrees + '°';
-            });
+                const geometry = new THREE.BoxGeometry(3, 4, extrusionDepth);
+                const material = new THREE.MeshStandardMaterial({ color: color });
+                const mesh = new THREE.Mesh(geometry, material);
+                mesh.position.set(x, y, z);
+                mesh.castShadow = true;
+                mesh.receiveShadow = true;
+                textGroup.add(mesh);
 
-            depthSlider.addEventListener('input', function() {
-                extrusionDepth = parseInt(this.value);
-                depthValue.textContent = extrusionDepth;
-                rebuildText();
-            });
-
-            zOffsetSlider.addEventListener('input', function() {
-                zOffsetMultiplier = parseInt(this.value);
-                zOffsetValue.textContent = zOffsetMultiplier;
-                rebuildText();
-            });
-
-            spacingSlider.addEventListener('input', function() {
-                letterSpacingMultiplier = parseFloat(this.value);
-                spacingValue.textContent = letterSpacingMultiplier.toFixed(1);
-                rebuildText();
-            });
-
-            lineSpacingSlider.addEventListener('input', function() {
-                lineSpacingMultiplier = parseFloat(this.value);
-                lineSpacingValue.textContent = lineSpacingMultiplier.toFixed(1);
-                rebuildText();
-            });
-
-            fontSelect.addEventListener('change', function() {
-                currentFontUrl = this.value;
-                loadFont(currentFontUrl);
-            });
-
-            boldBtn.addEventListener('click', function() {
-                isBold = !isBold;
-                this.classList.toggle('active');
-            });
-
-            italicBtn.addEventListener('click', function() {
-                isItalic = !isItalic;
-                this.classList.toggle('active');
-                rebuildText();
-            });
-        }
-
-        function rebuildText() {
-            while(textGroup.children.length > 0) {
-                textGroup.remove(textGroup.children[0]);
+                charIndex++;
             }
-            buildText();
-        }
+        });
+    }
 
-        function animate() {
-            requestAnimationFrame(animate);
-            
-            const gravity = new THREE.Vector3(0, -0.2, 0); // Gravity force matching trajectory calc
-            const groundY = -31.5; // Ground plane position + sphere radius
-            const friction = 0.97; // Higher friction = more realistic rolling
-            const bounceDampening = 0.7; // Energy loss on ground bounce
-            const stabilityThreshold = 0.02; // Velocity threshold for stability
-            const dt = 0.5; // Smaller time step = smoother, less jerky motion
-            
-            raindropLights.forEach((drop, index) => {
-                // If stable, just flicker in place - NO physics calculations
-                if (drop.isStable) {
-                    drop.stableTime++;
-                    const flicker = 0.7 + Math.random() * 0.6;
-                    drop.light.intensity = drop.baseIntensity * flicker;
-                    return; // Skip all physics for stable lights
+    function setupControls() {
+        const toggleBtn = document.getElementById('toggleControls');
+        const controlsPanel = document.getElementById('controls');
+
+        toggleBtn.addEventListener('click', function () {
+            controlsPanel.classList.toggle('minimized');
+            this.textContent = controlsPanel.classList.contains('minimized') ? 'Expand' : 'Minimize';
+        });
+
+        const rotYSlider = document.getElementById('rotY');
+        const rotXSlider = document.getElementById('rotX');
+        const depthSlider = document.getElementById('depth');
+        const zOffsetSlider = document.getElementById('zOffset');
+        const spacingSlider = document.getElementById('spacing');
+        const lineSpacingSlider = document.getElementById('lineSpacing');
+        const fontSelect = document.getElementById('fontSelect');
+        const boldBtn = document.getElementById('boldBtn');
+        const italicBtn = document.getElementById('italicBtn');
+
+        const rotYValue = document.getElementById('rotY-value');
+        const rotXValue = document.getElementById('rotX-value');
+        const depthValue = document.getElementById('depth-value');
+        const zOffsetValue = document.getElementById('zOffset-value');
+        const spacingValue = document.getElementById('spacing-value');
+        const lineSpacingValue = document.getElementById('lineSpacing-value');
+
+        rotYSlider.addEventListener('input', function () {
+            const degrees = parseInt(this.value);
+            textGroup.rotation.y = degrees * Math.PI / 180;
+            rotYValue.textContent = degrees + '°';
+        });
+
+        rotXSlider.addEventListener('input', function () {
+            const degrees = parseInt(this.value);
+            textGroup.rotation.x = degrees * Math.PI / 180;
+            rotXValue.textContent = degrees + '°';
+        });
+
+        depthSlider.addEventListener('input', function () {
+            extrusionDepth = parseInt(this.value);
+            depthValue.textContent = extrusionDepth;
+            // clear cache entries with different depth
+            // (simpler: clear whole cache to ensure depth change applies)
+            geometryCache.clear();
+            rebuildText();
+        });
+
+        zOffsetSlider.addEventListener('input', function () {
+            zOffsetMultiplier = parseInt(this.value);
+            zOffsetValue.textContent = zOffsetMultiplier;
+            rebuildText();
+        });
+
+        spacingSlider.addEventListener('input', function () {
+            letterSpacingMultiplier = parseFloat(this.value);
+            spacingValue.textContent = letterSpacingMultiplier.toFixed(1);
+            rebuildText();
+        });
+
+        lineSpacingSlider.addEventListener('input', function () {
+            lineSpacingMultiplier = parseFloat(this.value);
+            lineSpacingValue.textContent = lineSpacingMultiplier.toFixed(1);
+            rebuildText();
+        });
+
+        fontSelect.addEventListener('change', function () {
+            currentFontUrl = this.value;
+            loadFont(currentFontUrl);
+        });
+
+        boldBtn.addEventListener('click', function () {
+            isBold = !isBold;
+            this.classList.toggle('active');
+            // bold isn't used directly in this opentype pipeline without separate font files
+        });
+
+        italicBtn.addEventListener('click', function () {
+            isItalic = !isItalic;
+            this.classList.toggle('active');
+            // geometry cache must be cleared because shapes change with italic skew
+            geometryCache.clear();
+            rebuildText();
+        });
+    }
+
+    function rebuildText() {
+        // remove all children from textGroup
+        while (textGroup.children.length > 0) {
+            const child = textGroup.children[0];
+            // dispose geometry and material to free GPU memory where possible
+            if (child.geometry) child.geometry.dispose();
+            if (child.material) {
+                if (Array.isArray(child.material)) {
+                    child.material.forEach(m => m.dispose && m.dispose());
+                } else {
+                    child.material.dispose && child.material.dispose();
                 }
-                
-                // Check if this light should start
-                if (drop.lifetime < 0) {
-                    // Check if ANY previous light is stable (not just immediately previous)
-                    let canLaunch = false;
-                    for (let i = 0; i < index; i++) {
-                        if (raindropLights[i].isStable) {
-                            canLaunch = true;
-                            break;
-                        }
-                    }
-                    // Also allow first light to launch immediately
-                    if (index === 0 || canLaunch) {
-                        launchLight(drop);
-                    }
-                    return;
-                }
-                
-                drop.lifetime++;
-                
-                if (drop.lifetime > 0) {
-                    // Apply gravity (ODE: dv/dt = g)
-                    drop.velocity.add(gravity.clone().multiplyScalar(dt));
-                    
-                    // Update position (ODE: dx/dt = v)
-                    drop.position.add(drop.velocity.clone().multiplyScalar(dt));
-                    
-                    // Check if light went out of bounds
-                    const outOfBounds = Math.abs(drop.position.x) > 100 || 
-                                       drop.position.y < -50 || 
-                                       drop.position.y > 100 ||
-                                       Math.abs(drop.position.z) > 100;
-                    
-                    if (outOfBounds) {
-                        console.log(`Light ${index} went out of bounds, getting new light from pool`);
-                        drop.isStable = true; // Mark as stable so it stops physics
-                        drop.light.intensity = 0; // Turn it off
-                        getNextLightFromPool(); // Get replacement from pool
-                        return;
-                    }
-                    
-                    // Check collision with ground plane
-                    if (drop.position.y <= groundY) {
-                        drop.position.y = groundY;
-                        
-                        // Bounce: dampened elastic collision in Y
-                        if (Math.abs(drop.velocity.y) > 0.1) {
-                            drop.velocity.y = -drop.velocity.y * bounceDampening;
-                        } else {
-                            drop.velocity.y = 0; // Stop micro-bounces
-                        }
-                        
-                        // Apply rolling friction on X and Z when on ground
-                        drop.velocity.x *= friction;
-                        drop.velocity.z *= friction;
-                        
-                        // Check if particle has stabilized
-                        const horizontalSpeed = Math.sqrt(drop.velocity.x * drop.velocity.x + drop.velocity.z * drop.velocity.z);
-                        if (horizontalSpeed < stabilityThreshold && Math.abs(drop.velocity.y) < stabilityThreshold) {
-                            drop.isStable = true;
-                            drop.velocity.set(0, 0, 0);
-                            console.log(`Light ${index} stabilized at:`, drop.position);
-                            
-                            // Get a new light from the pool (no frame drop!)
-                            getNextLightFromPool();
-                        }
-                    }
-                    
-                    // Check collision with text meshes - perfect elastic collision
-                    textGroup.children.forEach(letterMesh => {
-                        const localPos = letterMesh.worldToLocal(drop.position.clone());
-                        
-                        if (!letterMesh.geometry.boundingBox) {
-                            letterMesh.geometry.computeBoundingBox();
-                        }
-                        const box = letterMesh.geometry.boundingBox;
-                        
-                        if (box.containsPoint(localPos)) {
-                            handleCollision(drop, letterMesh, localPos, box);
-                        }
-                    });
-                    
-                    // Fade in at start
-                    drop.fadeFactor = Math.min(1.0, drop.fadeFactor + 0.1);
-                }
-                
-                // Sparkler flicker
+            }
+            textGroup.remove(child);
+        }
+        buildText();
+    }
+
+    /* -------------------------
+       Physics & raindrop lights (kept as before)
+       ------------------------- */
+    function animate() {
+        requestAnimationFrame(animate);
+
+        const gravity = new THREE.Vector3(0, -0.2, 0);
+        const groundY = -31.5;
+        const friction = 0.97;
+        const bounceDampening = 0.7;
+        const stabilityThreshold = 0.02;
+        const dt = 0.5;
+
+        raindropLights.forEach((drop, index) => {
+            if (drop.isStable) {
+                drop.stableTime++;
                 const flicker = 0.7 + Math.random() * 0.6;
-                drop.light.intensity = drop.baseIntensity * flicker * drop.fadeFactor;
-                
-                // Update light position
-                drop.light.position.copy(drop.position);
-            });
-            
-            renderer.render(scene, camera);
-        }
-
-        function launchLight(drop) {
-            // Calculate trajectory from camera to a random point near text
-            const cameraPos = new THREE.Vector3(0, 0, 60);
-            
-            // Much tighter spread - most lights land closer to camera
-            const targetX = (Math.random() - 0.5) * 25; // Reduced from 40
-            const targetY = (Math.random() - 0.5) * 35; // Reduced from 50
-            const targetZ = 10 + Math.random() * 30; // Bias towards camera (10-40 instead of -10 to 10)
-            const textTarget = new THREE.Vector3(targetX, targetY, targetZ);
-            
-            // Random launch angle between 20-30 degrees (lower = shorter range)
-            const launchAngle = (20 + Math.random() * 10) * Math.PI / 180;
-            const g = 0.2; // gravity constant
-            
-            // Direction from camera to target
-            const direction = new THREE.Vector3()
-                .subVectors(textTarget, cameraPos);
-            const horizontalDist = Math.sqrt(direction.x * direction.x + direction.z * direction.z);
-            const verticalDist = textTarget.y - cameraPos.y;
-            
-            // Calculate initial velocity needed to hit target at given angle
-            const tanAngle = Math.tan(launchAngle);
-            const cosAngle = Math.cos(launchAngle);
-            const sinAngle = Math.sin(launchAngle);
-            
-            // Solve ballistic trajectory
-            const sin2Angle = Math.sin(2 * launchAngle);
-            const denominator = sin2Angle - (2 * cosAngle * cosAngle * verticalDist / horizontalDist);
-            
-            let v0;
-            if (denominator > 0) {
-                v0 = Math.sqrt((g * horizontalDist) / denominator);
-            } else {
-                v0 = Math.sqrt((g * horizontalDist) / (2 * cosAngle * cosAngle * tanAngle));
-            }
-            
-            // Much less velocity - reduce to 10-100% of calculated for wide variety
-            v0 *= (0.1 + Math.random() * 0.9);
-            
-            // Velocity components
-            direction.normalize();
-            const horizontalDir = new THREE.Vector3(direction.x, 0, direction.z).normalize();
-            
-            const vx = horizontalDir.x * v0 * cosAngle;
-            const vy = v0 * sinAngle;
-            const vz = horizontalDir.z * v0 * cosAngle;
-            
-            // Set launch parameters
-            drop.position.set(0, 0, 60);
-            drop.velocity.set(vx, vy, vz);
-            drop.lifetime = 0;
-            drop.fadeFactor = 0;
-            
-            console.log(`Launching light to target (${targetX.toFixed(1)}, ${targetY.toFixed(1)}, ${targetZ.toFixed(1)}) at ${(launchAngle * 180 / Math.PI).toFixed(1)}° with v0=${v0.toFixed(2)}`);
-        }
-
-        function getNextLightFromPool() {
-            // Find an unused light in the pool
-            const availableLight = lightPool.find(l => !l.inUse);
-            
-            if (!availableLight) {
-                console.log('Light pool exhausted! All 20 lights in use.');
+                drop.light.intensity = drop.baseIntensity * flicker;
                 return;
             }
-            
-            // Mark as in use
-            availableLight.inUse = true;
-            
-            // Add to raindropLights array
-            raindropLights.push({
-                light: availableLight.light,
-                position: new THREE.Vector3(0, 0, 60),
-                velocity: new THREE.Vector3(0, 0, 0),
-                baseIntensity: 2.5,
-                fadeOut: false,
-                fadeFactor: 0,
-                lifetime: -1, // Wait for previous to be stable
-                isStable: false,
-                stableTime: 0
-            });
-            
-            console.log(`Activated light from pool. Active lights: ${raindropLights.filter(d => !d.isStable || d.light.intensity > 0).length}`);
-        }
 
-        function createNewLight() {
-            // Deprecated - using pool instead
-            console.warn('createNewLight called but should use pool');
-        }
-
-        function handleCollision(drop, mesh, localPos, boundingBox) {
-            const center = new THREE.Vector3();
-            boundingBox.getCenter(center);
-            
-            const dx = Math.abs(localPos.x - center.x);
-            const dy = Math.abs(localPos.y - center.y);
-            const dz = Math.abs(localPos.z - center.z);
-            
-            const halfSize = new THREE.Vector3();
-            boundingBox.getSize(halfSize).multiplyScalar(0.5);
-            
-            const penetrationX = halfSize.x - dx;
-            const penetrationY = halfSize.y - dy;
-            const penetrationZ = halfSize.z - dz;
-            
-            let normal = new THREE.Vector3();
-            
-            if (penetrationX < penetrationY && penetrationX < penetrationZ) {
-                normal.set(localPos.x > center.x ? 1 : -1, 0, 0);
-            } else if (penetrationY < penetrationZ) {
-                normal.set(0, localPos.y > center.y ? 1 : -1, 0);
-            } else {
-                normal.set(0, 0, localPos.z > center.z ? 1 : -1);
+            if (drop.lifetime < 0) {
+                let canLaunch = false;
+                for (let i = 0; i < index; i++) {
+                    if (raindropLights[i].isStable) {
+                        canLaunch = true;
+                        break;
+                    }
+                }
+                if (index === 0 || canLaunch) {
+                    launchLight(drop);
+                }
+                return;
             }
-            
-            const worldNormal = normal.applyMatrix3(new THREE.Matrix3().getNormalMatrix(mesh.matrixWorld)).normalize();
-            
-            // Perfect elastic collision: v' = v - 2(v·n)n
-            const dotProduct = drop.velocity.dot(worldNormal);
-            const reflection = worldNormal.clone().multiplyScalar(2 * dotProduct);
-            drop.velocity.sub(reflection);
-            
-            // Push particle out along collision normal
-            const pushOut = worldNormal.clone().multiplyScalar(1.5);
-            drop.position.add(pushOut);
+
+            drop.lifetime++;
+
+            if (drop.lifetime > 0) {
+                drop.velocity.add(gravity.clone().multiplyScalar(dt));
+                drop.position.add(drop.velocity.clone().multiplyScalar(dt));
+
+                const outOfBounds = Math.abs(drop.position.x) > 100 ||
+                    drop.position.y < -50 ||
+                    drop.position.y > 100 ||
+                    Math.abs(drop.position.z) > 100;
+
+                if (outOfBounds) {
+                    drop.isStable = true;
+                    drop.light.intensity = 0;
+                    getNextLightFromPool();
+                    return;
+                }
+
+                if (drop.position.y <= groundY) {
+                    drop.position.y = groundY;
+                    if (Math.abs(drop.velocity.y) > 0.1) {
+                        drop.velocity.y = -drop.velocity.y * bounceDampening;
+                    } else {
+                        drop.velocity.y = 0;
+                    }
+                    drop.velocity.x *= friction;
+                    drop.velocity.z *= friction;
+
+                    const horizontalSpeed = Math.sqrt(drop.velocity.x * drop.velocity.x + drop.velocity.z * drop.velocity.z);
+                    if (horizontalSpeed < stabilityThreshold && Math.abs(drop.velocity.y) < stabilityThreshold) {
+                        drop.isStable = true;
+                        drop.velocity.set(0, 0, 0);
+                        getNextLightFromPool();
+                    }
+                }
+
+                // Check collisions with textGroup children
+                for (let li = 0; li < textGroup.children.length; li++) {
+                    const letterMesh = textGroup.children[li];
+                    // ensure boundingBox exists (should from cache or compute)
+                    if (!letterMesh.geometry.boundingBox) letterMesh.geometry.computeBoundingBox();
+                    // convert world position -> local for the mesh
+                    const localPos = letterMesh.worldToLocal(drop.position.clone());
+                    const box = letterMesh.geometry.boundingBox;
+                    if (box.containsPoint(localPos)) {
+                        handleCollision(drop, letterMesh, localPos, box);
+                    }
+                }
+
+                drop.fadeFactor = Math.min(1.0, drop.fadeFactor + 0.1);
+            }
+
+            const flicker = 0.7 + Math.random() * 0.6;
+            drop.light.intensity = drop.baseIntensity * flicker * drop.fadeFactor;
+            drop.light.position.copy(drop.position);
+        });
+
+        renderer.render(scene, camera);
+    }
+
+    function launchLight(drop) {
+        const cameraPos = new THREE.Vector3(0, 0, 60);
+
+        const targetX = (Math.random() - 0.5) * 25;
+        const targetY = (Math.random() - 0.5) * 35;
+        const targetZ = 10 + Math.random() * 30;
+        const textTarget = new THREE.Vector3(targetX, targetY, targetZ);
+
+        const launchAngle = (20 + Math.random() * 10) * Math.PI / 180;
+        const g = 0.2;
+
+        const direction = new THREE.Vector3().subVectors(textTarget, cameraPos);
+        const horizontalDist = Math.sqrt(direction.x * direction.x + direction.z * direction.z);
+        const verticalDist = textTarget.y - cameraPos.y;
+
+        const cosAngle = Math.cos(launchAngle);
+        const sinAngle = Math.sin(launchAngle);
+        const tanAngle = Math.tan(launchAngle);
+
+        const sin2Angle = Math.sin(2 * launchAngle);
+        const denominator = sin2Angle - (2 * cosAngle * cosAngle * verticalDist / horizontalDist);
+
+        let v0;
+        if (denominator > 0) {
+            v0 = Math.sqrt((g * horizontalDist) / denominator);
+        } else {
+            v0 = Math.sqrt((g * horizontalDist) / (2 * cosAngle * cosAngle * tanAngle));
         }
 
-        function onWindowResize() {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
+        v0 *= (0.1 + Math.random() * 0.9);
+
+        direction.normalize();
+        const horizontalDir = new THREE.Vector3(direction.x, 0, direction.z).normalize();
+
+        const vx = horizontalDir.x * v0 * cosAngle;
+        const vy = v0 * sinAngle;
+        const vz = horizontalDir.z * v0 * cosAngle;
+
+        drop.position.set(0, 0, 60);
+        drop.velocity.set(vx, vy, vz);
+        drop.lifetime = 0;
+        drop.fadeFactor = 0;
+    }
+
+    function getNextLightFromPool() {
+        const availableLight = lightPool.find(l => !l.inUse);
+        if (!availableLight) {
+            console.log('Light pool exhausted! All lights in use.');
+            return;
+        }
+        availableLight.inUse = true;
+
+        raindropLights.push({
+            light: availableLight.light,
+            position: new THREE.Vector3(0, 0, 60),
+            velocity: new THREE.Vector3(0, 0, 0),
+            baseIntensity: 2.5,
+            fadeOut: false,
+            fadeFactor: 0,
+            lifetime: -1,
+            isStable: false,
+            stableTime: 0
+        });
+    }
+
+    function handleCollision(drop, mesh, localPos, boundingBox) {
+        const center = new THREE.Vector3();
+        boundingBox.getCenter(center);
+
+        const dx = Math.abs(localPos.x - center.x);
+        const dy = Math.abs(localPos.y - center.y);
+        const dz = Math.abs(localPos.z - center.z);
+
+        const halfSize = new THREE.Vector3();
+        boundingBox.getSize(halfSize).multiplyScalar(0.5);
+
+        const penetrationX = halfSize.x - dx;
+        const penetrationY = halfSize.y - dy;
+        const penetrationZ = halfSize.z - dz;
+
+        let normal = new THREE.Vector3();
+
+        if (penetrationX < penetrationY && penetrationX < penetrationZ) {
+            normal.set(localPos.x > center.x ? 1 : -1, 0, 0);
+        } else if (penetrationY < penetrationZ) {
+            normal.set(0, localPos.y > center.y ? 1 : -1, 0);
+        } else {
+            normal.set(0, 0, localPos.z > center.z ? 1 : -1);
         }
 
-        init();
+        const worldNormal = normal.applyMatrix3(new THREE.Matrix3().getNormalMatrix(mesh.matrixWorld)).normalize();
+
+        const dotProduct = drop.velocity.dot(worldNormal);
+        const reflection = worldNormal.clone().multiplyScalar(2 * dotProduct);
+        drop.velocity.sub(reflection);
+
+        const pushOut = worldNormal.clone().multiplyScalar(1.5);
+        drop.position.add(pushOut);
+    }
+
+    function onWindowResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    // start
+    init();
     </script>
 </body>
 </html>
