@@ -28,6 +28,42 @@
             max-height: 90vh;
             overflow-y: auto;
             z-index: 1000;
+            transition: all 0.3s ease;
+        }
+        #controls.minimized {
+            min-width: auto;
+            padding: 10px;
+        }
+        #controls.minimized .control-content {
+            display: none;
+        }
+        .control-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        #controls.minimized .control-header {
+            margin-bottom: 0;
+        }
+        .control-title {
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .toggle-btn {
+            background: #3498db;
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .toggle-btn:hover {
+            background: #2980b9;
+        }
+        .control-content {
+            display: block;
         }
         .control-group {
             margin-bottom: 15px;
@@ -83,6 +119,11 @@
 </head>
 <body>
     <div id="controls">
+        <div class="control-header">
+            <div class="control-title">Controls</div>
+            <button class="toggle-btn" id="toggleControls">Minimize</button>
+        </div>
+        <div class="control-content">
         <div class="control-group">
             <label>Font:</label>
             <select id="fontSelect">
@@ -128,6 +169,7 @@
             <label>Z Offset (0-150): <span class="value-display" id="zOffset-value">10</span></label>
             <input type="range" id="zOffset" min="0" max="150" value="10" step="1">
         </div>
+        </div>
     </div>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -144,6 +186,7 @@
         let currentFontUrl = 'https://cdn.jsdelivr.net/npm/@fontsource/source-code-pro@5.0.8/files/source-code-pro-latin-700-normal.woff';
         let raindropLights = [];
         let letterDepthOffsets = {};
+        let lightPool = []; // Pre-created lights for performance
 
         function init() {
             scene = new THREE.Scene();
@@ -159,54 +202,89 @@
             const ambientLight = new THREE.AmbientLight(0xffffff, 0.15);
             scene.add(ambientLight);
             
-            const light1 = new THREE.PointLight(0xffffdd, 2.5, 80);
+            // Add ground plane at world bottom (not parented to text)
+            const planeGeometry = new THREE.PlaneGeometry(200, 200);
+            const planeMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0x2a2a3e,
+                metalness: 0.1,
+                roughness: 0.8
+            });
+            const groundPlane = new THREE.Mesh(planeGeometry, planeMaterial);
+            groundPlane.rotation.x = -Math.PI / 2;
+            groundPlane.position.y = -32; // Below the bottom line of text
+            groundPlane.receiveShadow = true;
+            scene.add(groundPlane);
+            
+            // Neon colors array used throughout
+            const neonColors = [0x00ffff, 0x00ff00, 0xffffff];
+            
+            const light1Color = neonColors[Math.floor(Math.random() * neonColors.length)];
+            const light1 = new THREE.PointLight(light1Color, 2.5, 80);
             light1.position.set(0, 50, 5);
             light1.castShadow = true;
             scene.add(light1);
             
             const sphere1 = new THREE.Mesh(
                 new THREE.SphereGeometry(0.5, 16, 16),
-                new THREE.MeshBasicMaterial({ color: 0xffffaa })
+                new THREE.MeshBasicMaterial({ color: light1Color })
             );
             light1.add(sphere1);
             
-            const light2 = new THREE.PointLight(0xffffdd, 2.5, 80);
+            const light2Color = neonColors[Math.floor(Math.random() * neonColors.length)];
+            const light2 = new THREE.PointLight(light2Color, 2.5, 80);
             light2.position.set(0, 50, 5);
             light2.castShadow = true;
             scene.add(light2);
             
             const sphere2 = new THREE.Mesh(
                 new THREE.SphereGeometry(0.5, 16, 16),
-                new THREE.MeshBasicMaterial({ color: 0xffffaa })
+                new THREE.MeshBasicMaterial({ color: light2Color })
             );
             light2.add(sphere2);
+
+            // Pre-create a pool of 20 lights for performance (no frame drops)
+            for (let i = 0; i < 20; i++) {
+                const lightColor = neonColors[Math.floor(Math.random() * neonColors.length)];
+                const light = new THREE.PointLight(lightColor, 0, 80); // Start with 0 intensity
+                light.position.set(0, 0, 60);
+                light.castShadow = true;
+                scene.add(light);
+                
+                const sphere = new THREE.Mesh(
+                    new THREE.SphereGeometry(0.5, 16, 16),
+                    new THREE.MeshBasicMaterial({ color: lightColor })
+                );
+                light.add(sphere);
+                
+                lightPool.push({
+                    light: light,
+                    color: lightColor,
+                    inUse: false
+                });
+            }
 
             raindropLights = [
                 { 
                     light: light1, 
-                    position: new THREE.Vector3(0, 0, 50),
-                    velocity: new THREE.Vector3(
-                        (Math.random() - 0.5) * 0.1,
-                        (Math.random() - 0.5) * 0.1,
-                        -1.5
-                    ),
+                    position: new THREE.Vector3(0, 0, 60),
+                    velocity: new THREE.Vector3(0, 0, 0),
                     baseIntensity: 2.5, 
                     fadeOut: false,
                     fadeFactor: 0,
-                    lifetime: 0
+                    lifetime: 0,
+                    isStable: false,
+                    stableTime: 0
                 },
                 { 
                     light: light2, 
-                    position: new THREE.Vector3(0, 0, 50),
-                    velocity: new THREE.Vector3(
-                        (Math.random() - 0.5) * 0.1,
-                        (Math.random() - 0.5) * 0.1,
-                        -1.5
-                    ),
+                    position: new THREE.Vector3(0, 0, 60),
+                    velocity: new THREE.Vector3(0, 0, 0),
                     baseIntensity: 2.5, 
                     fadeOut: false,
                     fadeFactor: 0,
-                    lifetime: 60
+                    lifetime: -1,
+                    isStable: false,
+                    stableTime: 0
                 }
             ];
 
@@ -462,6 +540,14 @@
         }
 
         function setupControls() {
+            const toggleBtn = document.getElementById('toggleControls');
+            const controlsPanel = document.getElementById('controls');
+            
+            toggleBtn.addEventListener('click', function() {
+                controlsPanel.classList.toggle('minimized');
+                this.textContent = controlsPanel.classList.contains('minimized') ? 'Expand' : 'Minimize';
+            });
+            
             const rotYSlider = document.getElementById('rotY');
             const rotXSlider = document.getElementById('rotX');
             const depthSlider = document.getElementById('depth');
@@ -542,15 +628,90 @@
         function animate() {
             requestAnimationFrame(animate);
             
-            const maxLifetime = 240;
+            const gravity = new THREE.Vector3(0, -0.2, 0); // Gravity force matching trajectory calc
+            const groundY = -31.5; // Ground plane position + sphere radius
+            const friction = 0.97; // Higher friction = more realistic rolling
+            const bounceDampening = 0.7; // Energy loss on ground bounce
+            const stabilityThreshold = 0.02; // Velocity threshold for stability
+            const dt = 0.5; // Smaller time step = smoother, less jerky motion
             
-            raindropLights.forEach(drop => {
+            raindropLights.forEach((drop, index) => {
+                // If stable, just flicker in place - NO physics calculations
+                if (drop.isStable) {
+                    drop.stableTime++;
+                    const flicker = 0.7 + Math.random() * 0.6;
+                    drop.light.intensity = drop.baseIntensity * flicker;
+                    return; // Skip all physics for stable lights
+                }
+                
+                // Check if this light should start
+                if (drop.lifetime < 0) {
+                    // Check if ANY previous light is stable (not just immediately previous)
+                    let canLaunch = false;
+                    for (let i = 0; i < index; i++) {
+                        if (raindropLights[i].isStable) {
+                            canLaunch = true;
+                            break;
+                        }
+                    }
+                    // Also allow first light to launch immediately
+                    if (index === 0 || canLaunch) {
+                        launchLight(drop);
+                    }
+                    return;
+                }
+                
                 drop.lifetime++;
                 
-                if (drop.lifetime > 0 && drop.fadeFactor > 0) {
-                    drop.position.add(drop.velocity);
+                if (drop.lifetime > 0) {
+                    // Apply gravity (ODE: dv/dt = g)
+                    drop.velocity.add(gravity.clone().multiplyScalar(dt));
                     
-                    let didCollide = false;
+                    // Update position (ODE: dx/dt = v)
+                    drop.position.add(drop.velocity.clone().multiplyScalar(dt));
+                    
+                    // Check if light went out of bounds
+                    const outOfBounds = Math.abs(drop.position.x) > 100 || 
+                                       drop.position.y < -50 || 
+                                       drop.position.y > 100 ||
+                                       Math.abs(drop.position.z) > 100;
+                    
+                    if (outOfBounds) {
+                        console.log(`Light ${index} went out of bounds, getting new light from pool`);
+                        drop.isStable = true; // Mark as stable so it stops physics
+                        drop.light.intensity = 0; // Turn it off
+                        getNextLightFromPool(); // Get replacement from pool
+                        return;
+                    }
+                    
+                    // Check collision with ground plane
+                    if (drop.position.y <= groundY) {
+                        drop.position.y = groundY;
+                        
+                        // Bounce: dampened elastic collision in Y
+                        if (Math.abs(drop.velocity.y) > 0.1) {
+                            drop.velocity.y = -drop.velocity.y * bounceDampening;
+                        } else {
+                            drop.velocity.y = 0; // Stop micro-bounces
+                        }
+                        
+                        // Apply rolling friction on X and Z when on ground
+                        drop.velocity.x *= friction;
+                        drop.velocity.z *= friction;
+                        
+                        // Check if particle has stabilized
+                        const horizontalSpeed = Math.sqrt(drop.velocity.x * drop.velocity.x + drop.velocity.z * drop.velocity.z);
+                        if (horizontalSpeed < stabilityThreshold && Math.abs(drop.velocity.y) < stabilityThreshold) {
+                            drop.isStable = true;
+                            drop.velocity.set(0, 0, 0);
+                            console.log(`Light ${index} stabilized at:`, drop.position);
+                            
+                            // Get a new light from the pool (no frame drop!)
+                            getNextLightFromPool();
+                        }
+                    }
+                    
+                    // Check collision with text meshes - perfect elastic collision
                     textGroup.children.forEach(letterMesh => {
                         const localPos = letterMesh.worldToLocal(drop.position.clone());
                         
@@ -560,45 +721,112 @@
                         const box = letterMesh.geometry.boundingBox;
                         
                         if (box.containsPoint(localPos)) {
-                            didCollide = true;
                             handleCollision(drop, letterMesh, localPos, box);
                         }
                     });
-                }
-                
-                const outOfBounds = Math.abs(drop.position.x) > 60 || 
-                                   Math.abs(drop.position.y) > 60 || 
-                                   drop.position.z < -30 || 
-                                   drop.position.z > 70;
-                
-                if (drop.lifetime > maxLifetime || outOfBounds) {
-                    drop.fadeOut = true;
-                }
-                
-                if (drop.fadeOut) {
-                    drop.fadeFactor -= 0.05;
-                    if (drop.fadeFactor <= 0) {
-                        drop.position.set(0, 0, 50);
-                        drop.velocity.set(
-                            (Math.random() - 0.5) * 0.1,
-                            (Math.random() - 0.5) * 0.1,
-                            -1.5
-                        );
-                        drop.fadeOut = false;
-                        drop.fadeFactor = 0;
-                        drop.lifetime = 0;
-                    }
-                } else if (drop.lifetime > 0) {
+                    
+                    // Fade in at start
                     drop.fadeFactor = Math.min(1.0, drop.fadeFactor + 0.1);
                 }
                 
+                // Sparkler flicker
                 const flicker = 0.7 + Math.random() * 0.6;
                 drop.light.intensity = drop.baseIntensity * flicker * drop.fadeFactor;
                 
+                // Update light position
                 drop.light.position.copy(drop.position);
             });
             
             renderer.render(scene, camera);
+        }
+
+        function launchLight(drop) {
+            // Calculate trajectory from camera to a random point near text
+            const cameraPos = new THREE.Vector3(0, 0, 60);
+            
+            // Much tighter spread - most lights land closer to camera
+            const targetX = (Math.random() - 0.5) * 25; // Reduced from 40
+            const targetY = (Math.random() - 0.5) * 35; // Reduced from 50
+            const targetZ = 10 + Math.random() * 30; // Bias towards camera (10-40 instead of -10 to 10)
+            const textTarget = new THREE.Vector3(targetX, targetY, targetZ);
+            
+            // Random launch angle between 20-30 degrees (lower = shorter range)
+            const launchAngle = (20 + Math.random() * 10) * Math.PI / 180;
+            const g = 0.2; // gravity constant
+            
+            // Direction from camera to target
+            const direction = new THREE.Vector3()
+                .subVectors(textTarget, cameraPos);
+            const horizontalDist = Math.sqrt(direction.x * direction.x + direction.z * direction.z);
+            const verticalDist = textTarget.y - cameraPos.y;
+            
+            // Calculate initial velocity needed to hit target at given angle
+            const tanAngle = Math.tan(launchAngle);
+            const cosAngle = Math.cos(launchAngle);
+            const sinAngle = Math.sin(launchAngle);
+            
+            // Solve ballistic trajectory
+            const sin2Angle = Math.sin(2 * launchAngle);
+            const denominator = sin2Angle - (2 * cosAngle * cosAngle * verticalDist / horizontalDist);
+            
+            let v0;
+            if (denominator > 0) {
+                v0 = Math.sqrt((g * horizontalDist) / denominator);
+            } else {
+                v0 = Math.sqrt((g * horizontalDist) / (2 * cosAngle * cosAngle * tanAngle));
+            }
+            
+            // Much less velocity - reduce to 10-100% of calculated for wide variety
+            v0 *= (0.1 + Math.random() * 0.9);
+            
+            // Velocity components
+            direction.normalize();
+            const horizontalDir = new THREE.Vector3(direction.x, 0, direction.z).normalize();
+            
+            const vx = horizontalDir.x * v0 * cosAngle;
+            const vy = v0 * sinAngle;
+            const vz = horizontalDir.z * v0 * cosAngle;
+            
+            // Set launch parameters
+            drop.position.set(0, 0, 60);
+            drop.velocity.set(vx, vy, vz);
+            drop.lifetime = 0;
+            drop.fadeFactor = 0;
+            
+            console.log(`Launching light to target (${targetX.toFixed(1)}, ${targetY.toFixed(1)}, ${targetZ.toFixed(1)}) at ${(launchAngle * 180 / Math.PI).toFixed(1)}° with v0=${v0.toFixed(2)}`);
+        }
+
+        function getNextLightFromPool() {
+            // Find an unused light in the pool
+            const availableLight = lightPool.find(l => !l.inUse);
+            
+            if (!availableLight) {
+                console.log('Light pool exhausted! All 20 lights in use.');
+                return;
+            }
+            
+            // Mark as in use
+            availableLight.inUse = true;
+            
+            // Add to raindropLights array
+            raindropLights.push({
+                light: availableLight.light,
+                position: new THREE.Vector3(0, 0, 60),
+                velocity: new THREE.Vector3(0, 0, 0),
+                baseIntensity: 2.5,
+                fadeOut: false,
+                fadeFactor: 0,
+                lifetime: -1, // Wait for previous to be stable
+                isStable: false,
+                stableTime: 0
+            });
+            
+            console.log(`Activated light from pool. Active lights: ${raindropLights.filter(d => !d.isStable || d.light.intensity > 0).length}`);
+        }
+
+        function createNewLight() {
+            // Deprecated - using pool instead
+            console.warn('createNewLight called but should use pool');
         }
 
         function handleCollision(drop, mesh, localPos, boundingBox) {
@@ -628,12 +856,12 @@
             
             const worldNormal = normal.applyMatrix3(new THREE.Matrix3().getNormalMatrix(mesh.matrixWorld)).normalize();
             
+            // Perfect elastic collision: v' = v - 2(v·n)n
             const dotProduct = drop.velocity.dot(worldNormal);
             const reflection = worldNormal.clone().multiplyScalar(2 * dotProduct);
             drop.velocity.sub(reflection);
             
-            drop.velocity.multiplyScalar(0.75);
-            
+            // Push particle out along collision normal
             const pushOut = worldNormal.clone().multiplyScalar(1.5);
             drop.position.add(pushOut);
         }
