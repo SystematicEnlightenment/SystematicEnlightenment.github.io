@@ -138,6 +138,7 @@
         let isItalic = false;
         let currentFontUrl = 'https://cdn.jsdelivr.net/npm/@fontsource/source-code-pro@5.0.8/files/source-code-pro-latin-700-normal.woff';
         let raindropLights = [];
+        let letterDepthOffsets = {};
 
         function init() {
             scene = new THREE.Scene();
@@ -153,17 +154,11 @@
             const ambientLight = new THREE.AmbientLight(0xffffff, 0.15);
             scene.add(ambientLight);
             
-            // Create two point lights for sparkler raindrop effect
             const light1 = new THREE.PointLight(0xffffdd, 2.5, 80);
             light1.position.set(0, 50, 5);
             light1.castShadow = true;
-            light1.shadow.mapSize.width = 2048;
-            light1.shadow.mapSize.height = 2048;
-            light1.shadow.camera.near = 0.5;
-            light1.shadow.camera.far = 80;
             scene.add(light1);
             
-            // Add visible sphere for light1
             const sphere1 = new THREE.Mesh(
                 new THREE.SphereGeometry(0.5, 16, 16),
                 new THREE.MeshBasicMaterial({ color: 0xffffaa })
@@ -173,29 +168,22 @@
             const light2 = new THREE.PointLight(0xffffdd, 2.5, 80);
             light2.position.set(0, 50, 5);
             light2.castShadow = true;
-            light2.shadow.mapSize.width = 2048;
-            light2.shadow.mapSize.height = 2048;
-            light2.shadow.camera.near = 0.5;
-            light2.shadow.camera.far = 80;
             scene.add(light2);
             
-            // Add visible sphere for light2
             const sphere2 = new THREE.Mesh(
                 new THREE.SphereGeometry(0.5, 16, 16),
                 new THREE.MeshBasicMaterial({ color: 0xffffaa })
             );
             light2.add(sphere2);
 
-            // Store lights for animation with physics
-            // Fire from camera position (0, 0, 60) straight towards text at (0, 0, 0)
             raindropLights = [
                 { 
                     light: light1, 
                     position: new THREE.Vector3(0, 0, 50),
                     velocity: new THREE.Vector3(
-                        (Math.random() - 0.5) * 0.1,  // Tiny X jiggle
-                        (Math.random() - 0.5) * 0.1,  // Tiny Y jiggle
-                        -1.5  // Strong velocity towards text
+                        (Math.random() - 0.5) * 0.1,
+                        (Math.random() - 0.5) * 0.1,
+                        -1.5
                     ),
                     baseIntensity: 2.5, 
                     fadeOut: false,
@@ -213,7 +201,7 @@
                     baseIntensity: 2.5, 
                     fadeOut: false,
                     fadeFactor: 0,
-                    lifetime: 60 // Fire second light later
+                    lifetime: 60
                 }
             ];
 
@@ -252,10 +240,23 @@
             const fontSize = 60;
             const baseLineHeight = 7 * lineSpacingMultiplier;
             
+            // Generate random offsets if none exist
+            if (Object.keys(letterDepthOffsets).length === 0) {
+                console.log('Generating Z offsets for letters');
+                let index = 0;
+                lines.forEach(line => {
+                    for (let i = 0; i < line.length; i++) {
+                        letterDepthOffsets[index] = (Math.random() - 0.5) * 2;
+                        index++;
+                    }
+                });
+            }
+            
+            let charIndex = 0;
             lines.forEach((line, lineIndex) => {
                 let currentX = 0;
                 const lineWidth = calculateLineWidth(line, fontSize);
-                currentX = -lineWidth / 2; // Center the line
+                currentX = -lineWidth / 2;
                 
                 for (let i = 0; i < line.length; i++) {
                     const char = line[i];
@@ -265,10 +266,13 @@
                     const x = currentX + glyphWidth / 2;
                     const y = -lineIndex * baseLineHeight + (lines.length * baseLineHeight) / 2 - baseLineHeight / 2;
                     
-                    createLetterFromFont(char, x, y, 0, fontSize);
+                    // Apply random Z offset, scaled by extrusionDepth
+                    const zOffset = letterDepthOffsets[charIndex] * extrusionDepth * 0.5;
                     
-                    // Move to next letter position using actual glyph width + spacing
+                    createLetterFromFont(char, x, y, zOffset, fontSize);
+                    
                     currentX += glyphWidth + (0.5 * letterSpacingMultiplier);
+                    charIndex++;
                 }
             });
         }
@@ -280,7 +284,7 @@
                 const glyphWidth = (glyph.advanceWidth * fontSize / font.unitsPerEm) / 15;
                 width += glyphWidth + (0.5 * letterSpacingMultiplier);
             }
-            return width - (0.5 * letterSpacingMultiplier); // Remove last spacing
+            return width - (0.5 * letterSpacingMultiplier);
         }
 
         function createLetterFromFont(char, x, y, z, fontSize) {
@@ -293,7 +297,7 @@
             const shapes = [];
             let currentShape = null;
             
-            path.commands.forEach((cmd, index) => {
+            path.commands.forEach((cmd) => {
                 if (cmd.type === 'M') {
                     if (currentShape) {
                         shapes.push(currentShape);
@@ -373,6 +377,8 @@
                 
                 const mesh = new THREE.Mesh(geometry, material);
                 mesh.position.set(x, y, z);
+                mesh.castShadow = true;
+                mesh.receiveShadow = true;
                 textGroup.add(mesh);
             } else {
                 const extrudeSettings = {
@@ -403,6 +409,8 @@
                 
                 const mesh = new THREE.Mesh(geometry, material);
                 mesh.position.set(x, y, z);
+                mesh.castShadow = true;
+                mesh.receiveShadow = true;
                 textGroup.add(mesh);
             }
         }
@@ -414,11 +422,23 @@
             const letterSpacing = 4.5 * letterSpacingMultiplier;
             const lineHeight = 6;
             
+            if (Object.keys(letterDepthOffsets).length === 0) {
+                let charIndex = 0;
+                lines.forEach((line) => {
+                    for (let i = 0; i < line.length; i++) {
+                        letterDepthOffsets[charIndex] = (Math.random() - 0.5) * 2;
+                        charIndex++;
+                    }
+                });
+            }
+            
+            let charIndex = 0;
             lines.forEach((line, lineIndex) => {
                 for (let i = 0; i < line.length; i++) {
                     const char = line[i];
                     const x = i * letterSpacing - (line.length * letterSpacing) / 2 + letterSpacing / 2;
                     const y = -lineIndex * lineHeight + (lines.length * lineHeight) / 2 - lineHeight / 2;
+                    const z = letterDepthOffsets[charIndex] * extrusionDepth * 0.5;
                     
                     const colors = [0xD4789C, 0xD4A95A, 0x6BA3C3, 0xE67E9F, 0xF4B860, 0x5A9BC4];
                     const color = colors[char.charCodeAt(0) % colors.length];
@@ -426,8 +446,12 @@
                     const geometry = new THREE.BoxGeometry(3, 4, extrusionDepth);
                     const material = new THREE.MeshStandardMaterial({ color: color });
                     const mesh = new THREE.Mesh(geometry, material);
-                    mesh.position.set(x, y, 0);
+                    mesh.position.set(x, y, z);
+                    mesh.castShadow = true;
+                    mesh.receiveShadow = true;
                     textGroup.add(mesh);
+                    
+                    charIndex++;
                 }
             });
         }
@@ -505,87 +529,100 @@
         function animate() {
             requestAnimationFrame(animate);
             
-            const gravity = new THREE.Vector3(0, -0.015, 0); // Gravity pointing down
-            const maxLifetime = 180; // Frames before reset (~3 seconds at 60fps)
+            const maxLifetime = 240;
             
             raindropLights.forEach(drop => {
                 drop.lifetime++;
                 
-                // Apply gravity to velocity
-                drop.velocity.add(gravity);
+                if (drop.lifetime > 0 && drop.fadeFactor > 0) {
+                    drop.position.add(drop.velocity);
+                    
+                    let didCollide = false;
+                    textGroup.children.forEach(letterMesh => {
+                        const localPos = letterMesh.worldToLocal(drop.position.clone());
+                        
+                        if (!letterMesh.geometry.boundingBox) {
+                            letterMesh.geometry.computeBoundingBox();
+                        }
+                        const box = letterMesh.geometry.boundingBox;
+                        
+                        if (box.containsPoint(localPos)) {
+                            didCollide = true;
+                            handleCollision(drop, letterMesh, localPos, box);
+                        }
+                    });
+                }
                 
-                // Update position based on velocity
-                drop.position.add(drop.velocity);
+                const outOfBounds = Math.abs(drop.position.x) > 60 || 
+                                   Math.abs(drop.position.y) > 60 || 
+                                   drop.position.z < -30 || 
+                                   drop.position.z > 70;
                 
-                // Check collision with text meshes
-                textGroup.children.forEach(letterMesh => {
-                    if (checkCollision(drop.position, letterMesh)) {
-                        handleCollision(drop, letterMesh);
-                    }
-                });
-                
-                // Fade out if too old, too far, or too slow
-                const speed = drop.velocity.length();
-                const tooFar = drop.position.z > 60 || drop.position.z < -20 || 
-                              Math.abs(drop.position.x) > 50 || Math.abs(drop.position.y) > 50;
-                
-                if (drop.lifetime > maxLifetime || tooFar || speed < 0.05) {
+                if (drop.lifetime > maxLifetime || outOfBounds) {
                     drop.fadeOut = true;
                 }
                 
-                // Apply fade
                 if (drop.fadeOut) {
-                    drop.fadeFactor -= 0.03;
+                    drop.fadeFactor -= 0.05;
                     if (drop.fadeFactor <= 0) {
-                        // Reset light - fire from camera position towards text
-                        drop.position.set(0, 0, 40);
+                        drop.position.set(0, 0, 50);
                         drop.velocity.set(
-                            (Math.random() - 0.5) * 0.5, 
-                            (Math.random() - 0.5) * 0.5, 
-                            -0.8
+                            (Math.random() - 0.5) * 0.1,
+                            (Math.random() - 0.5) * 0.1,
+                            -1.5
                         );
                         drop.fadeOut = false;
                         drop.fadeFactor = 0;
                         drop.lifetime = 0;
                     }
-                } else {
-                    drop.fadeFactor = Math.min(1.0, drop.fadeFactor + 0.05);
+                } else if (drop.lifetime > 0) {
+                    drop.fadeFactor = Math.min(1.0, drop.fadeFactor + 0.1);
                 }
                 
-                // Sparkler flicker effect
                 const flicker = 0.7 + Math.random() * 0.6;
                 drop.light.intensity = drop.baseIntensity * flicker * drop.fadeFactor;
                 
-                // Update light position
                 drop.light.position.copy(drop.position);
             });
             
             renderer.render(scene, camera);
         }
 
-        function checkCollision(position, mesh) {
-            const box = new THREE.Box3().setFromObject(mesh);
-            return box.containsPoint(position);
-        }
-
-        function handleCollision(drop, mesh) {
-            const box = new THREE.Box3().setFromObject(mesh);
+        function handleCollision(drop, mesh, localPos, boundingBox) {
             const center = new THREE.Vector3();
-            box.getCenter(center);
+            boundingBox.getCenter(center);
             
-            // Calculate normal from collision
-            const normal = new THREE.Vector3().subVectors(drop.position, center).normalize();
+            const dx = Math.abs(localPos.x - center.x);
+            const dy = Math.abs(localPos.y - center.y);
+            const dz = Math.abs(localPos.z - center.z);
             
-            // Reflect velocity: v_new = v - 2(v·n)n
-            const dotProduct = drop.velocity.dot(normal);
-            const reflection = normal.clone().multiplyScalar(2 * dotProduct);
+            const halfSize = new THREE.Vector3();
+            boundingBox.getSize(halfSize).multiplyScalar(0.5);
+            
+            const penetrationX = halfSize.x - dx;
+            const penetrationY = halfSize.y - dy;
+            const penetrationZ = halfSize.z - dz;
+            
+            let normal = new THREE.Vector3();
+            
+            if (penetrationX < penetrationY && penetrationX < penetrationZ) {
+                normal.set(localPos.x > center.x ? 1 : -1, 0, 0);
+            } else if (penetrationY < penetrationZ) {
+                normal.set(0, localPos.y > center.y ? 1 : -1, 0);
+            } else {
+                normal.set(0, 0, localPos.z > center.z ? 1 : -1);
+            }
+            
+            const worldNormal = normal.applyMatrix3(new THREE.Matrix3().getNormalMatrix(mesh.matrixWorld)).normalize();
+            
+            const dotProduct = drop.velocity.dot(worldNormal);
+            const reflection = worldNormal.clone().multiplyScalar(2 * dotProduct);
             drop.velocity.sub(reflection);
             
-            // Apply damping
             drop.velocity.multiplyScalar(0.75);
             
-            // Push out of collision
-            drop.position.add(normal.multiplyScalar(0.5));
+            const pushOut = worldNormal.clone().multiplyScalar(1.5);
+            drop.position.add(pushOut);
         }
 
         function onWindowResize() {
