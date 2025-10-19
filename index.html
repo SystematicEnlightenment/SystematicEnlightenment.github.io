@@ -150,24 +150,24 @@
             <input type="range" id="spacing" min="0" max="3" value="1" step="0.1">
         </div>
         <div class="control-group">
-            <label>Line Spacing: <span class="value-display" id="lineSpacing-value">1.0</span></label>
-            <input type="range" id="lineSpacing" min="0.5" max="3" value="1" step="0.1">
+            <label>Line Spacing: <span class="value-display" id="lineSpacing-value">0.5</span></label>
+            <input type="range" id="lineSpacing" min="0.5" max="3" value="0.5" step="0.1">
         </div>
         <div class="control-group">
-            <label>Rotation Y (0-360°): <span class="value-display" id="rotY-value">0°</span></label>
-            <input type="range" id="rotY" min="0" max="360" value="0" step="1">
+            <label>Rotation Y (0-360°): <span class="value-display" id="rotY-value">19°</span></label>
+            <input type="range" id="rotY" min="0" max="360" value="19" step="1">
         </div>
         <div class="control-group">
-            <label>Rotation X (-90 to 90°): <span class="value-display" id="rotX-value">0°</span></label>
-            <input type="range" id="rotX" min="-90" max="90" value="0" step="1">
+            <label>Rotation X (-90 to 90°): <span class="value-display" id="rotX-value">-14°</span></label>
+            <input type="range" id="rotX" min="-90" max="90" value="-14" step="1">
         </div>
         <div class="control-group">
-            <label>Extrusion Depth (1-150): <span class="value-display" id="depth-value">20</span></label>
-            <input type="range" id="depth" min="1" max="150" value="20" step="1">
+            <label>Extrusion Depth (1-500): <span class="value-display" id="depth-value">500</span></label>
+            <input type="range" id="depth" min="1" max="500" value="500" step="1">
         </div>
         <div class="control-group">
-            <label>Z Offset (0-150): <span class="value-display" id="zOffset-value">10</span></label>
-            <input type="range" id="zOffset" min="0" max="150" value="10" step="1">
+            <label>Z Offset (0-150): <span class="value-display" id="zOffset-value">5</span></label>
+            <input type="range" id="zOffset" min="0" max="150" value="5" step="1">
         </div>
         </div>
     </div>
@@ -176,17 +176,17 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/opentype.js/1.3.4/opentype.min.js"></script>
     <script>
         let scene, camera, renderer, textGroup;
-        let extrusionDepth = 20;
-        let zOffsetMultiplier = 10;
+        let extrusionDepth = 500; // updated default
+        let zOffsetMultiplier = 5; // updated default
         let font = null;
         let letterSpacingMultiplier = 1.0;
-        let lineSpacingMultiplier = 1.0;
+        let lineSpacingMultiplier = 0.5;
         let isBold = true;
         let isItalic = false;
         let currentFontUrl = 'https://cdn.jsdelivr.net/npm/@fontsource/source-code-pro@5.0.8/files/source-code-pro-latin-700-normal.woff';
         let raindropLights = [];
         let letterDepthOffsets = {};
-        let lightPool = []; // Pre-created lights for performance
+        let lightPool = [];
 
         function init() {
             scene = new THREE.Scene();
@@ -202,8 +202,8 @@
             const ambientLight = new THREE.AmbientLight(0xffffff, 0.15);
             scene.add(ambientLight);
             
-            // Add ground plane at world bottom (not parented to text)
-            const planeGeometry = new THREE.PlaneGeometry(200, 200);
+            // ground plane 500x500
+            const planeGeometry = new THREE.PlaneGeometry(500, 500);
             const planeMaterial = new THREE.MeshStandardMaterial({ 
                 color: 0x2a2a3e,
                 metalness: 0.1,
@@ -211,11 +211,10 @@
             });
             const groundPlane = new THREE.Mesh(planeGeometry, planeMaterial);
             groundPlane.rotation.x = -Math.PI / 2;
-            groundPlane.position.y = -32; // Below the bottom line of text
+            groundPlane.position.y = -32;
             groundPlane.receiveShadow = true;
             scene.add(groundPlane);
             
-            // Neon colors array used throughout
             const neonColors = [0x00ffff, 0x00ff00, 0xffffff];
             
             const light1Color = neonColors[Math.floor(Math.random() * neonColors.length)];
@@ -223,7 +222,6 @@
             light1.position.set(0, 50, 5);
             light1.castShadow = true;
             scene.add(light1);
-            
             const sphere1 = new THREE.Mesh(
                 new THREE.SphereGeometry(0.5, 16, 16),
                 new THREE.MeshBasicMaterial({ color: light1Color })
@@ -235,66 +233,39 @@
             light2.position.set(0, 50, 5);
             light2.castShadow = true;
             scene.add(light2);
-            
             const sphere2 = new THREE.Mesh(
                 new THREE.SphereGeometry(0.5, 16, 16),
                 new THREE.MeshBasicMaterial({ color: light2Color })
             );
             light2.add(sphere2);
 
-            // Pre-create a pool of 20 lights for performance (no frame drops)
-            for (let i = 0; i < 20; i++) {
+            // Pre-create 30 lights
+            for (let i = 0; i < 30; i++) {
                 const lightColor = neonColors[Math.floor(Math.random() * neonColors.length)];
-                const light = new THREE.PointLight(lightColor, 0, 80); // Start with 0 intensity
+                const light = new THREE.PointLight(lightColor, 0, 80);
                 light.position.set(0, 0, 60);
                 light.castShadow = true;
                 scene.add(light);
-                
                 const sphere = new THREE.Mesh(
                     new THREE.SphereGeometry(0.5, 16, 16),
                     new THREE.MeshBasicMaterial({ color: lightColor })
                 );
                 light.add(sphere);
-                
-                lightPool.push({
-                    light: light,
-                    color: lightColor,
-                    inUse: false
-                });
+                lightPool.push({ light: light, color: lightColor, inUse: false });
             }
 
             raindropLights = [
-                { 
-                    light: light1, 
-                    position: new THREE.Vector3(0, 0, 60),
-                    velocity: new THREE.Vector3(0, 0, 0),
-                    baseIntensity: 2.5, 
-                    fadeOut: false,
-                    fadeFactor: 0,
-                    lifetime: 0,
-                    isStable: false,
-                    stableTime: 0
-                },
-                { 
-                    light: light2, 
-                    position: new THREE.Vector3(0, 0, 60),
-                    velocity: new THREE.Vector3(0, 0, 0),
-                    baseIntensity: 2.5, 
-                    fadeOut: false,
-                    fadeFactor: 0,
-                    lifetime: -1,
-                    isStable: false,
-                    stableTime: 0
-                }
+                { light: light1, position: new THREE.Vector3(0, 0, 60), velocity: new THREE.Vector3(0, 0, 0), baseIntensity: 2.5, fadeOut: false, fadeFactor: 0, lifetime: 0, isStable: false, stableTime: 0 },
+                { light: light2, position: new THREE.Vector3(0, 0, 60), velocity: new THREE.Vector3(0, 0, 0), baseIntensity: 2.5, fadeOut: false, fadeFactor: 0, lifetime: -1, isStable: false, stableTime: 0 }
             ];
 
             textGroup = new THREE.Group();
-            textGroup.rotation.y = 0;
-            textGroup.rotation.x = 0;
+            // updated default rotations
+            textGroup.rotation.y = 19 * Math.PI / 180;
+            textGroup.rotation.x = -14 * Math.PI / 180;
             scene.add(textGroup);
 
             loadFont(currentFontUrl);
-
             setupControls();
             window.addEventListener('resize', onWindowResize);
             animate();
