@@ -244,7 +244,7 @@
                 const lightColor = neonColors[Math.floor(Math.random() * neonColors.length)];
                 const light = new THREE.PointLight(lightColor, 0, 80);
                 light.position.set(0, 0, 60);
-                light.castShadow = true;
+                light.castShadow = false;
                 scene.add(light);
                 const sphere = new THREE.Mesh(
                     new THREE.SphereGeometry(0.5, 16, 16),
