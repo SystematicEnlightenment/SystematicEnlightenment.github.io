@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Text Test</title>
+    <title>3D Text Test - Fast</title>
     <style>
         body {
             margin: 0;
@@ -176,8 +176,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/opentype.js/1.3.4/opentype.min.js"></script>
     <script>
         let scene, camera, renderer, textGroup;
-        let extrusionDepth = 500; // updated default
-        let zOffsetMultiplier = 5; // updated default
+        let extrusionDepth = 500;
+        let zOffsetMultiplier = 5;
         let font = null;
         let letterSpacingMultiplier = 1.0;
         let lineSpacingMultiplier = 0.5;
@@ -202,7 +202,6 @@
             const ambientLight = new THREE.AmbientLight(0xffffff, 0.15);
             scene.add(ambientLight);
             
-            // ground plane 500x500
             const planeGeometry = new THREE.PlaneGeometry(500, 500);
             const planeMaterial = new THREE.MeshStandardMaterial({ 
                 color: 0x2a2a3e,
@@ -239,7 +238,6 @@
             );
             light2.add(sphere2);
 
-            // Pre-create 30 lights
             for (let i = 0; i < 30; i++) {
                 const lightColor = neonColors[Math.floor(Math.random() * neonColors.length)];
                 const light = new THREE.PointLight(lightColor, 0, 80);
@@ -255,12 +253,11 @@
             }
 
             raindropLights = [
-                { light: light1, position: new THREE.Vector3(0, 0, 60), velocity: new THREE.Vector3(0, 0, 0), baseIntensity: 2.5, fadeOut: false, fadeFactor: 0, lifetime: 0, isStable: false, stableTime: 0 },
-                { light: light2, position: new THREE.Vector3(0, 0, 60), velocity: new THREE.Vector3(0, 0, 0), baseIntensity: 2.5, fadeOut: false, fadeFactor: 0, lifetime: -1, isStable: false, stableTime: 0 }
+                { light: light1, position: new THREE.Vector3(0, 0, 60), velocity: new THREE.Vector3(0, 0, 0), baseIntensity: 2.5, fadeOut: false, fadeFactor: 0, lifetime: 0, isStable: false, stableTime: 0, stableFrameCount: 0 },
+                { light: light2, position: new THREE.Vector3(0, 0, 60), velocity: new THREE.Vector3(0, 0, 0), baseIntensity: 2.5, fadeOut: false, fadeFactor: 0, lifetime: -1, isStable: false, stableTime: 0, stableFrameCount: 0 }
             ];
 
             textGroup = new THREE.Group();
-            // updated default rotations
             textGroup.rotation.y = 19 * Math.PI / 180;
             textGroup.rotation.x = -14 * Math.PI / 180;
             scene.add(textGroup);
@@ -294,7 +291,6 @@
             const fontSize = 60;
             const baseLineHeight = 7 * lineSpacingMultiplier;
             
-            // Generate random offsets if none exist
             if (Object.keys(letterDepthOffsets).length === 0) {
                 console.log('Generating Z offsets for letters');
                 let index = 0;
@@ -318,10 +314,7 @@
                     const glyphWidth = (glyph.advanceWidth * fontSize / font.unitsPerEm) / 15;
                     
                     const x = currentX + glyphWidth / 2;
-                    // Position from bottom up: bottom line at y=-28 (4 units above ground at -32)
                     const y = -28 + (lines.length - 1 - lineIndex) * baseLineHeight;
-                    
-                    // Apply random Z offset using zOffsetMultiplier (NOT extrusionDepth)
                     const zOffset = letterDepthOffsets[charIndex] * zOffsetMultiplier * 0.5;
                     
                     createLetterFromFont(char, x, y, zOffset, fontSize);
@@ -600,25 +593,23 @@
         function animate() {
             requestAnimationFrame(animate);
             
-            const gravity = new THREE.Vector3(0, -0.2, 0); // Gravity force matching trajectory calc
-            const groundY = -31.5; // Ground plane position + sphere radius
-            const friction = 0.97; // Higher friction = more realistic rolling
-            const bounceDampening = 0.7; // Energy loss on ground bounce
-            const stabilityThreshold = 0.02; // Velocity threshold for stability
-            const dt = 0.5; // Smaller time step = smoother, less jerky motion
+            // SPEED INCREASED: dt from 0.5 to 1.5 (3x faster)
+            const gravity = new THREE.Vector3(0, -0.2, 0);
+            const groundY = -31.5;
+            const friction = 0.97;
+            const bounceDampening = 0.7;
+            const stabilityThreshold = 0.15; // Increased to make it easier to detect stopped lights
+            const dt = 1.5; // 3x faster physics!
             
             raindropLights.forEach((drop, index) => {
-                // If stable, just flicker in place - NO physics calculations
                 if (drop.isStable) {
                     drop.stableTime++;
                     const flicker = 0.7 + Math.random() * 0.6;
                     drop.light.intensity = drop.baseIntensity * flicker;
-                    return; // Skip all physics for stable lights
+                    return;
                 }
                 
-                // Check if this light should start
                 if (drop.lifetime < 0) {
-                    // Check if ANY previous light is stable (not just immediately previous)
                     let canLaunch = false;
                     for (let i = 0; i < index; i++) {
                         if (raindropLights[i].isStable) {
@@ -626,7 +617,6 @@
                             break;
                         }
                     }
-                    // Also allow first light to launch immediately
                     if (index === 0 || canLaunch) {
                         launchLight(drop);
                     }
@@ -636,13 +626,9 @@
                 drop.lifetime++;
                 
                 if (drop.lifetime > 0) {
-                    // Apply gravity (ODE: dv/dt = g)
                     drop.velocity.add(gravity.clone().multiplyScalar(dt));
-                    
-                    // Update position (ODE: dx/dt = v)
                     drop.position.add(drop.velocity.clone().multiplyScalar(dt));
                     
-                    // Check if light went out of bounds
                     const outOfBounds = Math.abs(drop.position.x) > 100 || 
                                        drop.position.y < -50 || 
                                        drop.position.y > 100 ||
@@ -650,40 +636,34 @@
                     
                     if (outOfBounds) {
                         console.log(`Light ${index} went out of bounds, getting new light from pool`);
-                        drop.isStable = true; // Mark as stable so it stops physics
-                        drop.light.intensity = 0; // Turn it off
-                        getNextLightFromPool(); // Get replacement from pool
+                        drop.isStable = true;
+                        drop.light.intensity = 0;
+                        getNextLightFromPool();
                         return;
                     }
                     
-                    // Check collision with ground plane
                     if (drop.position.y <= groundY) {
                         drop.position.y = groundY;
                         
-                        // Bounce: dampened elastic collision in Y
                         if (Math.abs(drop.velocity.y) > 0.1) {
                             drop.velocity.y = -drop.velocity.y * bounceDampening;
                         } else {
-                            drop.velocity.y = 0; // Stop micro-bounces
+                            drop.velocity.y = 0;
                         }
                         
-                        // Apply rolling friction on X and Z when on ground
                         drop.velocity.x *= friction;
                         drop.velocity.z *= friction;
                         
-                        // Check if particle has stabilized
+                        // Simple stability check like original - no frame counter needed
                         const horizontalSpeed = Math.sqrt(drop.velocity.x * drop.velocity.x + drop.velocity.z * drop.velocity.z);
                         if (horizontalSpeed < stabilityThreshold && Math.abs(drop.velocity.y) < stabilityThreshold) {
                             drop.isStable = true;
                             drop.velocity.set(0, 0, 0);
                             console.log(`Light ${index} stabilized at:`, drop.position);
-                            
-                            // Get a new light from the pool (no frame drop!)
                             getNextLightFromPool();
                         }
                     }
                     
-                    // Check collision with text meshes - perfect elastic collision
                     textGroup.children.forEach(letterMesh => {
                         const localPos = letterMesh.worldToLocal(drop.position.clone());
                         
@@ -697,15 +677,11 @@
                         }
                     });
                     
-                    // Fade in at start
                     drop.fadeFactor = Math.min(1.0, drop.fadeFactor + 0.1);
                 }
                 
-                // Sparkler flicker
                 const flicker = 0.7 + Math.random() * 0.6;
                 drop.light.intensity = drop.baseIntensity * flicker * drop.fadeFactor;
-                
-                // Update light position
                 drop.light.position.copy(drop.position);
             });
             
@@ -713,31 +689,25 @@
         }
 
         function launchLight(drop) {
-            // Calculate trajectory from camera to a random point near text
             const cameraPos = new THREE.Vector3(0, 0, 60);
             
-            // Much tighter spread - most lights land closer to camera
-            const targetX = (Math.random() - 0.5) * 25; // Reduced from 40
-            const targetY = (Math.random() - 0.5) * 35; // Reduced from 50
-            const targetZ = 10 + Math.random() * 30; // Bias towards camera (10-40 instead of -10 to 10)
+            const targetX = (Math.random() - 0.5) * 25;
+            const targetY = (Math.random() - 0.5) * 35;
+            const targetZ = 10 + Math.random() * 30;
             const textTarget = new THREE.Vector3(targetX, targetY, targetZ);
             
-            // Random launch angle between 20-30 degrees (lower = shorter range)
             const launchAngle = (20 + Math.random() * 10) * Math.PI / 180;
-            const g = 0.2; // gravity constant
+            const g = 0.2; // Keep at 0.2 for trajectory calculation (dt scaling handles speed)
             
-            // Direction from camera to target
             const direction = new THREE.Vector3()
                 .subVectors(textTarget, cameraPos);
             const horizontalDist = Math.sqrt(direction.x * direction.x + direction.z * direction.z);
-            const verticalDist = textTarget.y - cameraPos.y;
+            const verticalDist = targetY - cameraPos.y;
             
-            // Calculate initial velocity needed to hit target at given angle
             const tanAngle = Math.tan(launchAngle);
             const cosAngle = Math.cos(launchAngle);
             const sinAngle = Math.sin(launchAngle);
             
-            // Solve ballistic trajectory
             const sin2Angle = Math.sin(2 * launchAngle);
             const denominator = sin2Angle - (2 * cosAngle * cosAngle * verticalDist / horizontalDist);
             
@@ -748,10 +718,9 @@
                 v0 = Math.sqrt((g * horizontalDist) / (2 * cosAngle * cosAngle * tanAngle));
             }
             
-            // Much less velocity - reduce to 10-100% of calculated for wide variety
+            // Less velocity variation for more consistent launches
             v0 *= (0.1 + Math.random() * 0.9);
             
-            // Velocity components
             direction.normalize();
             const horizontalDir = new THREE.Vector3(direction.x, 0, direction.z).normalize();
             
@@ -759,7 +728,6 @@
             const vy = v0 * sinAngle;
             const vz = horizontalDir.z * v0 * cosAngle;
             
-            // Set launch parameters
             drop.position.set(0, 0, 60);
             drop.velocity.set(vx, vy, vz);
             drop.lifetime = 0;
@@ -769,18 +737,15 @@
         }
 
         function getNextLightFromPool() {
-            // Find an unused light in the pool
             const availableLight = lightPool.find(l => !l.inUse);
             
             if (!availableLight) {
-                console.log('Light pool exhausted! All 20 lights in use.');
+                console.log('Light pool exhausted! All 30 lights in use.');
                 return;
             }
             
-            // Mark as in use
             availableLight.inUse = true;
             
-            // Add to raindropLights array
             raindropLights.push({
                 light: availableLight.light,
                 position: new THREE.Vector3(0, 0, 60),
@@ -788,17 +753,13 @@
                 baseIntensity: 2.5,
                 fadeOut: false,
                 fadeFactor: 0,
-                lifetime: -1, // Wait for previous to be stable
+                lifetime: -1,
                 isStable: false,
-                stableTime: 0
+                stableTime: 0,
+                stableFrameCount: 0
             });
             
             console.log(`Activated light from pool. Active lights: ${raindropLights.filter(d => !d.isStable || d.light.intensity > 0).length}`);
-        }
-
-        function createNewLight() {
-            // Deprecated - using pool instead
-            console.warn('createNewLight called but should use pool');
         }
 
         function handleCollision(drop, mesh, localPos, boundingBox) {
@@ -828,12 +789,10 @@
             
             const worldNormal = normal.applyMatrix3(new THREE.Matrix3().getNormalMatrix(mesh.matrixWorld)).normalize();
             
-            // Perfect elastic collision: v' = v - 2(v·n)n
             const dotProduct = drop.velocity.dot(worldNormal);
             const reflection = worldNormal.clone().multiplyScalar(2 * dotProduct);
             drop.velocity.sub(reflection);
             
-            // Push particle out along collision normal
             const pushOut = worldNormal.clone().multiplyScalar(1.5);
             drop.position.add(pushOut);
         }
