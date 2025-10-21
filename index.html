@@ -710,6 +710,7 @@
                 drop.velocity.set(0, 0, 0);
                 drop.lifetime = 0;
                 drop.fadeFactor = 0;
+                drop.baseIntensity = 8.0;  // ADD THIS LINE - Much brighter than regular lights (2.5)
                 
                 console.log(`Last light dropping vertically at (${offsetX.toFixed(1)}, 40, ${offsetZ.toFixed(1)}) - front of text based on rotY=${(rotY * 180 / Math.PI).toFixed(1)}°`);
                 return;
