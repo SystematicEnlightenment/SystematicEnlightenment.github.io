@@ -118,7 +118,7 @@
     </style>
 </head>
 <body>
-    <div id="controls">
+    <div id="controls" class="minimized">
         <div class="control-header">
             <div class="control-title">Controls</div>
             <button class="toggle-btn" id="toggleControls">Minimize</button>
@@ -509,6 +509,8 @@
             const toggleBtn = document.getElementById('toggleControls');
             const controlsPanel = document.getElementById('controls');
             
+            toggleBtn.textContent = 'Expand'; // Set initial text
+            
             toggleBtn.addEventListener('click', function() {
                 controlsPanel.classList.toggle('minimized');
                 this.textContent = controlsPanel.classList.contains('minimized') ? 'Expand' : 'Minimize';
@@ -530,53 +532,53 @@
             const zOffsetValue = document.getElementById('zOffset-value');
             const spacingValue = document.getElementById('spacing-value');
             const lineSpacingValue = document.getElementById('lineSpacing-value');
-
+        
             rotYSlider.addEventListener('input', function() {
                 const degrees = parseInt(this.value);
                 textGroup.rotation.y = degrees * Math.PI / 180;
                 rotYValue.textContent = degrees + '°';
             });
-
+        
             rotXSlider.addEventListener('input', function() {
                 const degrees = parseInt(this.value);
                 textGroup.rotation.x = degrees * Math.PI / 180;
                 rotXValue.textContent = degrees + '°';
             });
-
+        
             depthSlider.addEventListener('input', function() {
                 extrusionDepth = parseInt(this.value);
                 depthValue.textContent = extrusionDepth;
                 rebuildText();
             });
-
+        
             zOffsetSlider.addEventListener('input', function() {
                 zOffsetMultiplier = parseInt(this.value);
                 zOffsetValue.textContent = zOffsetMultiplier;
                 rebuildText();
             });
-
+        
             spacingSlider.addEventListener('input', function() {
                 letterSpacingMultiplier = parseFloat(this.value);
                 spacingValue.textContent = letterSpacingMultiplier.toFixed(1);
                 rebuildText();
             });
-
+        
             lineSpacingSlider.addEventListener('input', function() {
                 lineSpacingMultiplier = parseFloat(this.value);
                 lineSpacingValue.textContent = lineSpacingMultiplier.toFixed(1);
                 rebuildText();
             });
-
+        
             fontSelect.addEventListener('change', function() {
                 currentFontUrl = this.value;
                 loadFont(currentFontUrl);
             });
-
+        
             boldBtn.addEventListener('click', function() {
                 isBold = !isBold;
                 this.classList.toggle('active');
             });
-
+        
             italicBtn.addEventListener('click', function() {
                 isItalic = !isItalic;
                 this.classList.toggle('active');
