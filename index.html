@@ -689,6 +689,32 @@
         }
 
         function launchLight(drop) {
+            const isLastLight = raindropLights.length >= lightPool.length + 2;
+            
+            if (isLastLight) {
+                // Special handling for last light - drop vertically in front of text
+                const rotY = parseFloat(document.getElementById('rotY').value) * Math.PI / 180;
+                const rotX = parseFloat(document.getElementById('rotX').value) * Math.PI / 180;
+                
+                // Calculate distance in front of text (half text height)
+                const textHeight = 35; // Approximate text height
+                const frontDistance = textHeight * 0.5;
+                
+                // Position is offset based on rotation to be in front of text center
+                const offsetZ = frontDistance * Math.cos(rotY);
+                const offsetX = frontDistance * Math.sin(rotY);
+                
+                // Start position high above
+                drop.position.set(offsetX, 40, offsetZ);
+                // Zero horizontal velocity - pure vertical drop
+                drop.velocity.set(0, 0, 0);
+                drop.lifetime = 0;
+                drop.fadeFactor = 0;
+                
+                console.log(`Last light dropping vertically at (${offsetX.toFixed(1)}, 40, ${offsetZ.toFixed(1)}) - front of text based on rotY=${(rotY * 180 / Math.PI).toFixed(1)}°`);
+                return;
+            }
+            
             const cameraPos = new THREE.Vector3(0, 0, 60);
             
             const targetX = (Math.random() - 0.5) * 25;
@@ -697,7 +723,7 @@
             const textTarget = new THREE.Vector3(targetX, targetY, targetZ);
             
             const launchAngle = (20 + Math.random() * 10) * Math.PI / 180;
-            const g = 0.2; // Keep at 0.2 for trajectory calculation (dt scaling handles speed)
+            const g = 0.2;
             
             const direction = new THREE.Vector3()
                 .subVectors(textTarget, cameraPos);
@@ -718,7 +744,6 @@
                 v0 = Math.sqrt((g * horizontalDist) / (2 * cosAngle * cosAngle * tanAngle));
             }
             
-            // Less velocity variation for more consistent launches
             v0 *= (0.1 + Math.random() * 0.9);
             
             direction.normalize();
