@@ -265,6 +265,27 @@
             loadFont(currentFontUrl);
             setupControls();
             window.addEventListener('resize', onWindowResize);
+
+            // Animate zOffset from 100 to 0 over 4 seconds
+            let startTime = Date.now();
+            let animationInterval = setInterval(function() {
+                let elapsed = (Date.now() - startTime) / 1000; // seconds elapsed
+                if (elapsed >= 4) {
+                    zOffsetMultiplier = 0;
+                    document.getElementById('zOffset').value = 0;
+                    document.getElementById('zOffset-value').textContent = 0;
+                    clearInterval(animationInterval);
+                    rebuildText();
+                } else {
+                    let progress = elapsed / 4; // 0 to 1
+                    zOffsetMultiplier = 100 * (1 - progress); // 100 to 0
+                    document.getElementById('zOffset').value = zOffsetMultiplier;
+                    document.getElementById('zOffset-value').textContent = Math.round(zOffsetMultiplier);
+                    rebuildText();
+                }
+            }, 50); // Update every 50ms
+
+       
             animate();
         }
 
