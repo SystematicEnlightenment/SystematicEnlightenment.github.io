@@ -366,12 +366,13 @@
                     const glyph = font.charToGlyph(char);
                     const glyphWidth = (glyph.advanceWidth * fontSize / font.unitsPerEm) / 15;
                     
-                    // Apply kerning if there's a next character
+                    // Apply kerning if there's a next character and font has kerning
                     let kerning = 0;
-                    if (i < line.length - 1) {
+                    if (i < line.length - 1 && font.getKerningValue) {
                         const nextChar = line[i + 1];
                         const nextGlyph = font.charToGlyph(nextChar);
-                        kerning = (font.getKerningValue(glyph, nextGlyph) * fontSize / font.unitsPerEm) / 15;
+                        const kernValue = font.getKerningValue(glyph, nextGlyph);
+                        kerning = (kernValue * fontSize / font.unitsPerEm) / 15;
                     }
                     
                     const x = currentX + glyphWidth / 2;
