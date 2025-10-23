@@ -766,22 +766,26 @@
                 drop.light.position.copy(drop.position);
             });
 
-            // Gradually increase ambient light after all lights have settled
-            const allSettled = raindropLights.every(drop => drop.isStable);
-            if (allSettled && !window.brightnessAnimationComplete) {
+            // Gradually increase ambient light 2 seconds after the last light drops
+            if (window.lastLightDropped && !window.brightnessAnimationComplete) {
                 if (!window.brightnessAnimationStart) {
                     window.brightnessAnimationStart = Date.now();
                     window.initialAmbientIntensity = ambientLight.intensity;
+                    console.log('🔆 Starting brightness animation from intensity:', ambientLight.intensity);
                 }
                 
                 const elapsed = (Date.now() - window.brightnessAnimationStart) / 1000;
-                if (elapsed < 3) {
-                    // Increase by 30% over 3 seconds
-                    const progress = elapsed / 3;
+                
+                // Wait 2 seconds before starting the brightness increase
+                if (elapsed >= 2 && elapsed < 5) {
+                    // Increase by 100% over 3 seconds (after the 2 second wait)
+                    const progress = (elapsed - 2) / 3;
                     ambientLight.intensity = window.initialAmbientIntensity + (window.initialAmbientIntensity * 1.0 * progress);
-                } else {
+                    console.log('🔆 Animating brightness:', ambientLight.intensity.toFixed(3));
+                } else if (elapsed >= 5) {
                     ambientLight.intensity = window.initialAmbientIntensity * 2.0; // Final 100% brighter
                     window.brightnessAnimationComplete = true;
+                    console.log('🔆 Brightness animation complete! Final intensity:', ambientLight.intensity);
                 }
             }
             
@@ -811,6 +815,7 @@
                 drop.lifetime = 0;
                 drop.fadeFactor = 0;
                 drop.baseIntensity = 4.0;  // ADD THIS LINE - Much brighter than regular lights (2.5)
+                window.lastLightDropped = true;  // ADD THIS LINE
                 
                 console.log(`Last light dropping vertically at (${offsetX.toFixed(1)}, 40, ${offsetZ.toFixed(1)}) - front of text based on rotY=${(rotY * 180 / Math.PI).toFixed(1)}°`);
                 return;
