@@ -187,6 +187,8 @@
         let raindropLights = [];
         let letterDepthOffsets = {};
         let lightPool = [];
+        let zOffsetAnimationStart = null;
+        let zOffsetAnimationDuration = 4000; // 4 seconds in milliseconds        
 
         function init() {
             scene = new THREE.Scene();
@@ -266,10 +268,13 @@
             setupControls();
             window.addEventListener('resize', onWindowResize);
         
-            // Animate zOffset from 100 to 0 over 4 seconds
-            zOffsetMultiplier = 100; // Start at 100
+            // Set initial zOffset to 100
+            zOffsetMultiplier = 100;
             document.getElementById('zOffset').value = 100;
             document.getElementById('zOffset-value').textContent = 100;
+            
+            // Animation will start when animate() begins
+            zOffsetAnimationStart = Date.now();
         
             let startTime = Date.now();
             let animationInterval = setInterval(function() {
@@ -667,6 +672,32 @@
 
         function animate() {
             requestAnimationFrame(animate);
+
+            // Animate zOffset from 100 to 0 over 4 seconds
+            if (zOffsetAnimationStart !== null) {
+                let elapsed = Date.now() - zOffsetAnimationStart;
+                if (elapsed >= zOffsetAnimationDuration) {
+                    zOffsetMultiplier = 0;
+                    document.getElementById('zOffset').value = 0;
+                    document.getElementById('zOffset-value').textContent = 0;
+                    zOffsetAnimationStart = null; // Stop animation
+                    
+                    // Set final positions
+                    textGroup.children.forEach((mesh, index) => {
+                        mesh.position.z = 0;
+                    });
+                } else {
+                    let progress = elapsed / zOffsetAnimationDuration;
+                    zOffsetMultiplier = 100 * (1 - progress);
+                    document.getElementById('zOffset').value = zOffsetMultiplier;
+                    document.getElementById('zOffset-value').textContent = Math.round(zOffsetMultiplier);
+                    
+                    // Smoothly move existing letters
+                    textGroup.children.forEach((mesh, index) => {
+                        mesh.position.z = letterDepthOffsets[index] * zOffsetMultiplier * 0.5;
+                    });
+                }
+            }            
             
             // SPEED INCREASED: dt from 0.5 to 1.5 (3x faster)
             const gravity = new THREE.Vector3(0, -0.2, 0);
