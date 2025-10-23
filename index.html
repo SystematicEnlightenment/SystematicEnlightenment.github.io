@@ -198,7 +198,7 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setClearColor(0x1a1a2e);
             document.body.appendChild(renderer.domElement);
-
+        
             const ambientLight = new THREE.AmbientLight(0xffffff, 0.15);
             scene.add(ambientLight);
             
@@ -237,7 +237,7 @@
                 new THREE.MeshBasicMaterial({ color: light2Color })
             );
             light2.add(sphere2);
-
+        
             for (let i = 0; i < 30; i++) {
                 const lightColor = neonColors[Math.floor(Math.random() * neonColors.length)];
                 const light = new THREE.PointLight(lightColor, 0, 80);
@@ -251,23 +251,24 @@
                 light.add(sphere);
                 lightPool.push({ light: light, color: lightColor, inUse: false });
             }
-
+        
             raindropLights = [
                 { light: light1, position: new THREE.Vector3(0, 0, 60), velocity: new THREE.Vector3(0, 0, 0), baseIntensity: 2.5, fadeOut: false, fadeFactor: 0, lifetime: 0, isStable: false, stableTime: 0, stableFrameCount: 0 },
                 { light: light2, position: new THREE.Vector3(0, 0, 60), velocity: new THREE.Vector3(0, 0, 0), baseIntensity: 2.5, fadeOut: false, fadeFactor: 0, lifetime: -1, isStable: false, stableTime: 0, stableFrameCount: 0 }
             ];
-
+        
             textGroup = new THREE.Group();
             textGroup.rotation.y = 19 * Math.PI / 180;
             textGroup.rotation.x = -14 * Math.PI / 180;
             scene.add(textGroup);
-
+        
             loadFont(currentFontUrl);
             setupControls();
             window.addEventListener('resize', onWindowResize);
-
+        
             // Animate zOffset from 100 to 0 over 4 seconds
             let startTime = Date.now();
+            let lastRebuild = 0;
             let animationInterval = setInterval(function() {
                 let elapsed = (Date.now() - startTime) / 1000; // seconds elapsed
                 if (elapsed >= 4) {
@@ -281,12 +282,56 @@
                     zOffsetMultiplier = 100 * (1 - progress); // 100 to 0
                     document.getElementById('zOffset').value = zOffsetMultiplier;
                     document.getElementById('zOffset-value').textContent = Math.round(zOffsetMultiplier);
-                    rebuildText();
+                    
+                    // Only rebuild text every 0.5 seconds instead of every frame
+                    if (elapsed - lastRebuild >= 0.5) {
+                        rebuildText();
+                        lastRebuild = elapsed;
+                    }
                 }
             }, 50); // Update every 50ms
-
-       
-            animate();
+        
+            // Performance test before starting animation
+            let testStartTime = performance.now();
+            let testFrames = 0;
+            let testDuration = 1000; // Test for 1 second
+        
+            function performanceTest() {
+                testFrames++;
+                let elapsed = performance.now() - testStartTime;
+                
+                if (elapsed < testDuration) {
+                    renderer.render(scene, camera);
+                    requestAnimationFrame(performanceTest);
+                } else {
+                    let fps = (testFrames / elapsed) * 1000;
+                    console.log(`Performance test: ${fps.toFixed(1)} FPS`);
+                    
+                    // Adjust light pool size based on performance
+                    let maxLights = 30; // Default
+                    if (fps < 30) {
+                        maxLights = 10; // Low performance
+                        console.log('Low performance detected - using 10 lights');
+                    } else if (fps < 45) {
+                        maxLights = 20; // Medium performance
+                        console.log('Medium performance detected - using 20 lights');
+                    } else {
+                        console.log('Good performance detected - using 30 lights');
+                    }
+                    
+                    // Adjust the light pool to match performance
+                    while (lightPool.length > maxLights) {
+                        let removed = lightPool.pop();
+                        scene.remove(removed.light);
+                    }
+                    
+                    // Now start the main animation
+                    animate();
+                }
+            }
+            
+            // Start performance test instead of animate()
+            performanceTest();
         }
 
         function loadFont(url) {
