@@ -366,13 +366,21 @@
                     const glyph = font.charToGlyph(char);
                     const glyphWidth = (glyph.advanceWidth * fontSize / font.unitsPerEm) / 15;
                     
+                    // Apply kerning if there's a next character
+                    let kerning = 0;
+                    if (i < line.length - 1) {
+                        const nextChar = line[i + 1];
+                        const nextGlyph = font.charToGlyph(nextChar);
+                        kerning = (font.getKerningValue(glyph, nextGlyph) * fontSize / font.unitsPerEm) / 15;
+                    }
+                    
                     const x = currentX + glyphWidth / 2;
                     const y = -28 + (lines.length - 1 - lineIndex) * baseLineHeight;
                     const zOffset = letterDepthOffsets[charIndex] * zOffsetMultiplier * 0.5;
                     
                     createLetterFromFont(char, x, y, zOffset, fontSize, lineIndex);
                     
-                    currentX += glyphWidth + (0.5 * letterSpacingMultiplier);
+                    currentX += glyphWidth + kerning + (0.5 * letterSpacingMultiplier);
                     charIndex++;
                 }
             });
