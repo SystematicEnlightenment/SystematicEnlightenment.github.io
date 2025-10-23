@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NYE2026_SysEn</title>
+    <title>NYE2026_SysEn</title>https://github.com/SystematicEnlightenment/SystematicEnlightenment.github.io/edit/main/index.html
     <style>
         body {
             margin: 0;
@@ -766,26 +766,33 @@
                 drop.light.position.copy(drop.position);
             });
 
-            // Gradually increase ambient light 2 seconds after the last light drops
+            // Gradually increase camera light 2 seconds after the last light drops
             if (window.lastLightDropped && !window.brightnessAnimationComplete) {
                 if (!window.brightnessAnimationStart) {
                     window.brightnessAnimationStart = Date.now();
-                    window.initialAmbientIntensity = ambientLight.intensity;
-                    console.log('🔆 Starting brightness animation from intensity:', ambientLight.intensity);
+                    
+                    // Create a spotlight from the camera
+                    window.cameraLight = new THREE.SpotLight(0xffffff, 0, 100, Math.PI / 6, 0.5, 2);
+                    window.cameraLight.position.copy(camera.position);
+                    window.cameraLight.target.position.set(0, 0, 0);
+                    scene.add(window.cameraLight);
+                    scene.add(window.cameraLight.target);
+                    
+                    console.log('🔆 Starting camera light animation');
                 }
                 
                 const elapsed = (Date.now() - window.brightnessAnimationStart) / 1000;
                 
                 // Wait 2 seconds before starting the brightness increase
                 if (elapsed >= 2 && elapsed < 5) {
-                    // Increase by 100% over 3 seconds (after the 2 second wait)
+                    // Increase intensity over 3 seconds (after the 2 second wait)
                     const progress = (elapsed - 2) / 3;
-                    ambientLight.intensity = window.initialAmbientIntensity + (window.initialAmbientIntensity * 1.0 * progress);
-                    console.log('🔆 Animating brightness:', ambientLight.intensity.toFixed(3));
+                    window.cameraLight.intensity = 3.0 * progress; // Ramp up to intensity 3.0
+                    console.log('🔆 Camera light intensity:', window.cameraLight.intensity.toFixed(3));
                 } else if (elapsed >= 5) {
-                    ambientLight.intensity = window.initialAmbientIntensity * 2.0; // Final 100% brighter
+                    window.cameraLight.intensity = 3.0; // Final intensity
                     window.brightnessAnimationComplete = true;
-                    console.log('🔆 Brightness animation complete! Final intensity:', ambientLight.intensity);
+                    console.log('🔆 Camera light animation complete! Final intensity:', window.cameraLight.intensity);
                 }
             }
             
