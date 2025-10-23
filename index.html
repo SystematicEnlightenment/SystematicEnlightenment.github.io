@@ -267,8 +267,11 @@
             window.addEventListener('resize', onWindowResize);
         
             // Animate zOffset from 100 to 0 over 4 seconds
+            zOffsetMultiplier = 100; // Start at 100
+            document.getElementById('zOffset').value = 100;
+            document.getElementById('zOffset-value').textContent = 100;
+        
             let startTime = Date.now();
-            let lastRebuild = 0;
             let animationInterval = setInterval(function() {
                 let elapsed = (Date.now() - startTime) / 1000; // seconds elapsed
                 if (elapsed >= 4) {
@@ -276,20 +279,23 @@
                     document.getElementById('zOffset').value = 0;
                     document.getElementById('zOffset-value').textContent = 0;
                     clearInterval(animationInterval);
-                    rebuildText();
+                    
+                    // Animate existing letters to final position
+                    textGroup.children.forEach((mesh, index) => {
+                        mesh.position.z = letterDepthOffsets[index] * 0 * 0.5; // Final z = 0
+                    });
                 } else {
                     let progress = elapsed / 4; // 0 to 1
                     zOffsetMultiplier = 100 * (1 - progress); // 100 to 0
                     document.getElementById('zOffset').value = zOffsetMultiplier;
                     document.getElementById('zOffset-value').textContent = Math.round(zOffsetMultiplier);
                     
-                    // Only rebuild text every 0.5 seconds instead of every frame
-                    if (elapsed - lastRebuild >= 0.5) {
-                        rebuildText();
-                        lastRebuild = elapsed;
-                    }
+                    // Smoothly move existing letters instead of rebuilding
+                    textGroup.children.forEach((mesh, index) => {
+                        mesh.position.z = letterDepthOffsets[index] * zOffsetMultiplier * 0.5;
+                    });
                 }
-            }, 50); // Update every 50ms
+            }, 16); // Update every 16ms (60fps)
         
             // Performance test before starting animation
             let testStartTime = performance.now();
