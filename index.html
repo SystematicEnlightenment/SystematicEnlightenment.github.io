@@ -381,7 +381,7 @@
                     
                     createLetterFromFont(char, x, y, zOffset, fontSize, lineIndex);
                     
-                    currentX += glyphWidth + kerning + (0.5 * letterSpacingMultiplier);
+                    currentX += (glyphWidth + kerning) * letterSpacingMultiplier;
                     charIndex++;
                 }
             });
