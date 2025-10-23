@@ -778,9 +778,9 @@
                 if (elapsed < 3) {
                     // Increase by 30% over 3 seconds
                     const progress = elapsed / 3;
-                    ambientLight.intensity = window.initialAmbientIntensity + (window.initialAmbientIntensity * 0.3 * progress);
+                    ambientLight.intensity = window.initialAmbientIntensity + (window.initialAmbientIntensity * 1.0 * progress);
                 } else {
-                    ambientLight.intensity = window.initialAmbientIntensity * 1.3; // Final 30% brighter
+                    ambientLight.intensity = window.initialAmbientIntensity * 2.0; // Final 100% brighter
                     window.brightnessAnimationComplete = true;
                 }
             }
