@@ -816,7 +816,7 @@
                 drop.velocity.set(0, 0, 0);
                 drop.lifetime = 0;
                 drop.fadeFactor = 0;
-                drop.baseIntensity = 8.0;  // ADD THIS LINE - Much brighter than regular lights (2.5)
+                drop.baseIntensity = 4.0;  // ADD THIS LINE - Much brighter than regular lights (2.5)
                 
                 console.log(`Last light dropping vertically at (${offsetX.toFixed(1)}, 40, ${offsetZ.toFixed(1)}) - front of text based on rotY=${(rotY * 180 / Math.PI).toFixed(1)}°`);
                 return;
@@ -890,6 +890,12 @@
                 stableTime: 0,
                 stableFrameCount: 0
             });
+
+            // Check if this is the last light and make it blue
+            if (raindropLights.length >= lightPool.length + 2) {
+                availableLight.light.color.setHex(0x0088ff); // Bright blue
+                availableLight.light.children[0].material.color.setHex(0x0088ff); // Sphere color
+            }            
             
             console.log(`Activated light from pool. Active lights: ${raindropLights.filter(d => !d.isStable || d.light.intensity > 0).length}`);
         }
