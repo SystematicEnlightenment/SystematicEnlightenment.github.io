@@ -804,6 +804,51 @@
                     console.log('🔆 Camera light animation complete! Final intensity:', window.cameraLight.intensity);
                 }
             }
+
+            // Camera rotation animation - starts 1 second after last light drops
+            if (window.lastLightDropped && !window.cameraRotationComplete) {
+                if (!window.cameraRotationStart) {
+                    window.cameraRotationStart = Date.now();
+                    window.initialRotationX = -9; // Starting rotation
+                    window.targetRotationX = 15;  // Target rotation
+                    console.log('🎥 Starting camera rotation animation');
+                }
+                
+                const elapsed = (Date.now() - window.cameraRotationStart) / 1000;
+                
+                // Wait 1 second before starting the rotation
+                if (elapsed >= 1 && elapsed < 3) {
+                    // Rotate over 2 seconds (after the 1 second wait)
+                    const progress = (elapsed - 1) / 2;
+                    // Use easing for smooth animation (similar to extrusion animation)
+                    const easedProgress = progress < 0.5 
+                        ? 2 * progress * progress 
+                        : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+                    
+                    const currentRotX = window.initialRotationX + 
+                        (window.targetRotationX - window.initialRotationX) * easedProgress;
+                    
+                    // Update the text group rotation
+                    if (textGroup) {
+                        textGroup.rotation.x = currentRotX * Math.PI / 180;
+                    }
+                    
+                    // Update the slider value to match
+                    document.getElementById('rotX').value = currentRotX.toFixed(1);
+                    document.getElementById('rotX-value').textContent = currentRotX.toFixed(1) + '°';
+                    
+                    console.log('🎥 Camera rotation X:', currentRotX.toFixed(2) + '°');
+                } else if (elapsed >= 3) {
+                    // Set final rotation
+                    if (textGroup) {
+                        textGroup.rotation.x = window.targetRotationX * Math.PI / 180;
+                    }
+                    document.getElementById('rotX').value = window.targetRotationX;
+                    document.getElementById('rotX-value').textContent = window.targetRotationX + '°';
+                    window.cameraRotationComplete = true;
+                    console.log('🎥 Camera rotation animation complete! Final rotation:', window.targetRotationX + '°');
+                }
+            }
             
             renderer.render(scene, camera);
         }
