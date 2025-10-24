@@ -41,6 +41,13 @@
             opacity: 0;
             pointer-events: none;
         }
+        #loading-text {
+            animation: loading-pulse 0.8s ease-in-out infinite;
+        }
+        @keyframes loading-pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
         #controls {
             position: absolute;
             top: 20px;
@@ -143,7 +150,9 @@
     </style>
 </head>
 <body>
-    <div id="loading-screen">🍉🐋 loading 🐋🍉</div>
+    <div id="loading-screen">
+        <div id="loading-text">🍉🐋 loading 🐋🍉</div>
+    </div>
     <div id="controls" class="minimized">
         <div class="control-header">
             <div class="control-title">Controls</div>
@@ -312,6 +321,27 @@
             console.log('📊 Text meshes in scene:', textGroup.children.length);
             console.log('💡 Lights in pool:', lightPool.length);
             
+            // Animate loading text
+            const loadingText = document.getElementById('loading-text');
+            const fullText = '🍉🐋 loading 🐋🍉';
+            const frames = [
+                '🍉🐋 l 🐋🍉',
+                '🍉🐋 lo 🐋🍉',
+                '🍉🐋 loa 🐋🍉',
+                '🍉🐋 load 🐋🍉',
+                '🍉🐋 loadi 🐋🍉',
+                '🍉🐋 loadin 🐋🍉',
+                '🍉🐋 loading 🐋🍉'
+            ];
+            let frameIndex = 0;
+            const loadingInterval = setInterval(() => {
+                loadingText.textContent = frames[frameIndex % frames.length];
+                frameIndex++;
+            }, 150);
+            
+            // Store interval ID so we can clear it later
+            window.loadingInterval = loadingInterval;
+            
             // Force an initial render to ensure everything is loaded
             console.log('🖼️ Forcing initial render...');
             renderer.render(scene, camera);
@@ -383,20 +413,28 @@
                         console.log(`🗑️ Removed ${removedCount} lights from pool`);
                     }
                     
-                    // NOW start the animation timer (after performance test completes)
+                    // NOW we're ready to show the scene and start animations
                     console.log('🎬 Performance test complete - starting animations in next frame');
+                    
+                    // Stop loading text animation
+                    if (window.loadingInterval) {
+                        clearInterval(window.loadingInterval);
+                    }
                     
                     // Hide loading screen and show canvas
                     const loadingScreen = document.getElementById('loading-screen');
                     loadingScreen.classList.add('hidden');
                     renderer.domElement.classList.add('ready');
                     
-                    // Wait one more frame before starting animations to ensure clean transition
-                    requestAnimationFrame(() => {
+                    // Wait for fade transition to complete (0.5s) then start animations
+                    setTimeout(() => {
+                        // NOW start the extrusion animation timer
                         zOffsetAnimationStart = Date.now();
-                        console.log('▶️ Animation timer started at:', zOffsetAnimationStart);
+                        console.log('▶️ Extrusion animation started at:', zOffsetAnimationStart);
+                        
+                        // Start the animation loop
                         animate();
-                    });
+                    }, 500);
                 }
             }
             
