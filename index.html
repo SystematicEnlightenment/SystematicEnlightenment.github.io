@@ -190,6 +190,7 @@
         let zOffsetAnimationStart = null;
         let zOffsetAnimationDuration = 4000; // 4 seconds in milliseconds        
         let ambientLight;
+        let performanceTestComplete = false; // Flag to ensure test only runs once
         
         function init() {
             scene = new THREE.Scene();
@@ -265,18 +266,24 @@
             textGroup.rotation.x = -9 * Math.PI / 180;
             scene.add(textGroup);
         
-            loadFont(currentFontUrl);
             setupControls();
             window.addEventListener('resize', onWindowResize);
+            
+            // Load font first, then start performance test once everything is ready
+            loadFont(currentFontUrl);
         
             // Set initial zOffset to 100
             zOffsetMultiplier = 100;
             document.getElementById('zOffset').value = 100;
             document.getElementById('zOffset-value').textContent = 100;
             
-            // Animation will start when animate() begins
-            zOffsetAnimationStart = Date.now();
+            // DON'T start animation timer yet - wait for performance test
+            zOffsetAnimationStart = null;
+        }
         
+        function startPerformanceTest() {
+            console.log('🎬 Starting performance test - scene is ready');
+            
             // Performance test before starting animation
             let testStartTime = performance.now();
             let testFrames = 0;
@@ -287,6 +294,7 @@
                 let elapsed = performance.now() - testStartTime;
                 
                 if (elapsed < testDuration) {
+                    // Just render the static scene during test - no animations
                     renderer.render(scene, camera);
                     requestAnimationFrame(performanceTest);
                 } else {
@@ -311,12 +319,16 @@
                         scene.remove(removed.light);
                     }
                     
+                    // NOW start the animation timer (after performance test completes)
+                    zOffsetAnimationStart = Date.now();
+                    console.log('🎬 Starting animations after performance test');
+                    
                     // Now start the main animation
                     animate();
                 }
             }
             
-            // Start performance test instead of animate()
+            // Start performance test
             performanceTest();
         }
 
@@ -328,6 +340,13 @@
                 } else {
                     font = loadedFont;
                     rebuildText();
+                }
+                
+                // Start performance test ONLY on first load
+                if (!performanceTestComplete) {
+                    console.log('✅ Font loaded and text built - ready for performance test');
+                    performanceTestComplete = true;
+                    startPerformanceTest();
                 }
             });
         }
@@ -593,54 +612,72 @@
             const zOffsetValue = document.getElementById('zOffset-value');
             const spacingValue = document.getElementById('spacing-value');
             const lineSpacingValue = document.getElementById('lineSpacing-value');
+            
+            // Helper function to stop rotation loop on any control interaction
+            function stopRotationLoop() {
+                if (!window.cameraRotationStopped) {
+                    window.cameraRotationStopped = true;
+                    console.log('🛑 Rotation loop stopped by user interaction');
+                }
+            }
         
             rotYSlider.addEventListener('input', function() {
+                stopRotationLoop();
                 const degrees = parseInt(this.value);
                 textGroup.rotation.y = degrees * Math.PI / 180;
                 rotYValue.textContent = degrees + '°';
             });
         
             rotXSlider.addEventListener('input', function() {
+                stopRotationLoop();
+                
                 const degrees = parseInt(this.value);
                 textGroup.rotation.x = degrees * Math.PI / 180;
                 rotXValue.textContent = degrees + '°';
             });
         
             depthSlider.addEventListener('input', function() {
+                stopRotationLoop();
                 extrusionDepth = parseInt(this.value);
                 depthValue.textContent = extrusionDepth;
                 rebuildText();
             });
         
             zOffsetSlider.addEventListener('input', function() {
+                stopRotationLoop();
                 zOffsetMultiplier = parseInt(this.value);
                 zOffsetValue.textContent = zOffsetMultiplier;
                 rebuildText();
             });
         
             spacingSlider.addEventListener('input', function() {
+                stopRotationLoop();
                 letterSpacingMultiplier = parseFloat(this.value);
                 spacingValue.textContent = letterSpacingMultiplier.toFixed(1);
                 rebuildText();
             });
         
             lineSpacingSlider.addEventListener('input', function() {
+                stopRotationLoop();
                 lineSpacingMultiplier = parseFloat(this.value);
                 lineSpacingValue.textContent = lineSpacingMultiplier.toFixed(1);
                 rebuildText();
             });
         
             fontSelect.addEventListener('change', function() {
+                stopRotationLoop();
                 currentFontUrl = this.value;
                 loadFont(currentFontUrl);
             });
         
             boldBtn.addEventListener('click', function() {
+                stopRotationLoop();
                 isBold = !isBold;
                 this.classList.toggle('active');
             });
         
             italicBtn.addEventListener('click', function() {
+                stopRotationLoop();
                 isItalic = !isItalic;
                 this.classList.toggle('active');
                 rebuildText();
@@ -805,28 +842,29 @@
                 }
             }
 
-            // Camera rotation animation - starts 1 second after last light drops
-            if (window.lastLightDropped && !window.cameraRotationComplete) {
+            // Camera rotation animation - starts 1 second after last light drops, loops continuously
+            if (window.lastLightDropped && !window.cameraRotationStopped) {
                 if (!window.cameraRotationStart) {
                     window.cameraRotationStart = Date.now();
-                    window.initialRotationX = -9; // Starting rotation
-                    window.targetRotationX = 15;  // Target rotation
-                    console.log('🎥 Starting camera rotation animation');
+                    window.rotationMin = -9; // Minimum rotation
+                    window.rotationMax = 15;  // Maximum rotation
+                    window.rotationPeriod = 4000; // Full cycle in milliseconds (2 seconds each direction)
+                    console.log('🎥 Starting continuous camera rotation loop');
                 }
                 
-                const elapsed = (Date.now() - window.cameraRotationStart) / 1000;
+                const elapsed = Date.now() - window.cameraRotationStart;
                 
-                // Wait 1 second before starting the rotation
-                if (elapsed >= 1 && elapsed < 3) {
-                    // Rotate over 2 seconds (after the 1 second wait)
-                    const progress = (elapsed - 1) / 2;
-                    // Use easing for smooth animation (similar to extrusion animation)
-                    const easedProgress = progress < 0.5 
-                        ? 2 * progress * progress 
-                        : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+                // Wait 1 second before starting the rotation loop
+                if (elapsed >= 1000) {
+                    // Calculate position in the sine wave cycle
+                    const cycleTime = elapsed - 1000; // Time since loop started
+                    const phase = (cycleTime % window.rotationPeriod) / window.rotationPeriod; // 0 to 1
                     
-                    const currentRotX = window.initialRotationX + 
-                        (window.targetRotationX - window.initialRotationX) * easedProgress;
+                    // Use sine wave for smooth back-and-forth motion
+                    // sin goes from -1 to 1, we map it to our rotation range
+                    const sineValue = Math.sin(phase * Math.PI * 2 - Math.PI / 2); // Start at -1
+                    const currentRotX = window.rotationMin + 
+                        (window.rotationMax - window.rotationMin) * (sineValue + 1) / 2;
                     
                     // Update the text group rotation
                     if (textGroup) {
@@ -836,17 +874,6 @@
                     // Update the slider value to match
                     document.getElementById('rotX').value = currentRotX.toFixed(1);
                     document.getElementById('rotX-value').textContent = currentRotX.toFixed(1) + '°';
-                    
-                    console.log('🎥 Camera rotation X:', currentRotX.toFixed(2) + '°');
-                } else if (elapsed >= 3) {
-                    // Set final rotation
-                    if (textGroup) {
-                        textGroup.rotation.x = window.targetRotationX * Math.PI / 180;
-                    }
-                    document.getElementById('rotX').value = window.targetRotationX;
-                    document.getElementById('rotX-value').textContent = window.targetRotationX + '°';
-                    window.cameraRotationComplete = true;
-                    console.log('🎥 Camera rotation animation complete! Final rotation:', window.targetRotationX + '°');
                 }
             }
             
