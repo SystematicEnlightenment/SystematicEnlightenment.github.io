@@ -1,0 +1,132 @@
+
+<!doctype html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, height=device-height, user-scalable=no">
+    <script src="../components/web-animations-js/web-animations.min.js"></script>
+    <style>
+        body {
+            background-color: black;
+            overflow: hidden;
+            position: relative; /* Add this line to allow positioning of child elements */
+        }
+
+        .starfield {
+            background-color: rgba(0, 0, 0, 0);
+        }
+
+        .star0 {
+            height: 1px;
+            width: 1px;
+            opacity: 1;
+            position: absolute;
+        }
+       
+        .star1 {
+          height: 2px;
+          width: 2px;
+          border-radius: 50%;
+          opacity: 1;
+          position: absolute;
+        }
+
+        .star2 {
+          height: 3px;
+          width: 3px;
+          border-radius: 50%;
+          opacity: 1;
+          position: absolute;
+        }
+
+        .star3 {
+          height: 4px;
+          width: 4px;
+          border-radius: 50%;
+          opacity: 1;
+          position: absolute;
+        }
+
+        .star4 {
+          height: 4px;
+          width: 4px;
+          border-radius: 50%;
+          opacity: 1;
+          position: absolute;
+        }
+
+        /* Add CSS rules for your text container */
+        .text-container {
+            position: absolute;
+            top: 50%; /* Adjust the position as needed */
+            left: 50%; /* Adjust the position as needed */
+            transform: translate(-50%, -10%); /* Center the text */
+            color: white; /* Text color */
+            font-size: 18px; /* Adjust the font size */
+            width: 80%; /* Adjust the width as needed, e.g., 80% of the viewport width */
+            padding: 10px; /* Add padding for spacing */    
+            overflow: auto; /* Make the container scrollable */
+            max-height: 90vh; /* Set maximum height to 90% of the viewport height */
+        }
+    </style>
+</head>
+<body>
+<div id="universe">
+    <!-- Add a div for your text content -->
+    <div class="text-container">
+        <p>
+            <br />
+            <br />
+            <br />
+            ✩.•🐋 ☽ .* ✧🎧<br />
+            NYE party in the The Queens Head by Eastville park:<br />
+            <a href="https://maps.app.goo.gl/N4dP3FFoFqVVg13K8" style="color: #3DA5FF;">286 Fishponds Rd, Eastville, Bristol BS5 6PY<br /> </a>
+            ✮⋆｡° ˗ˏˋ 🍉🍓 ˎˊ˗ | 🍓₊˚ʚ ᗢ₊˚✧ ﾟ.🍉⋆｡°✩🍒₊˚ʚ ᗢ₊˚.<br />
+            8.30 - DRAGON'S LANE: Antifolk adjacent lo-fi high jinks<br />
+            9.00 - JO KING: Rocky to something more dancy<br />
+            10.00 - DJ 60°: Queer baddy bass wiggle slabs<br />
+            11.00 - Bernie - Multi-genre mash-up, or largely DnB<br />
+            11.58 - Cunts Coven - Witches attack<br />
+            12.02 - DJTJD - Half-time techno-DnB<br />
+            ✩.•🐋 ☽ .* ✧🎧<br />
+            <a href="https://www.justgiving.com/crowdfunding/systematic-enlightenment-3" style="color: #3DA5FF;">‼️Bring/donate cash for Gaza‼️<br /> </a>
+            Free entry, invite anyone.<br />
+            ✩.•🐋 ☽ .* ✧🎧<br />
+        <p>
+    </div>
+</div>
+<script>
+    var layerCount = 5;
+    var starCount = 100;
+    var universe = document.getElementById('universe');
+    var w = window;
+    var d = document;
+    var e = d.documentElement;
+    var g = d.getElementsByTagName('body')[0];
+    var width = w.innerWidth || e.clientWidth || g.clientWidth;
+    var height = w.innerHeight || e.clientHeight || g.clientHeight;
+    for (var l = 0; l < layerCount; ++l) {
+        var layer = document.createElement('div');
+        layer.setAttribute('id', 'layer' + l);
+        layer.setAttribute('class', 'starfield');
+        universe.appendChild(layer);
+        for (var i = 0; i < starCount; ++i) {
+            var xpos = Math.round(Math.random() * width);
+            var ypos = Math.round(Math.random() * height);
+            for (var s = 0; s < 2; ++s) {
+                var star = document.createElement('div');
+                star.setAttribute('class', 'star' + l);
+                star.style.webkitTransform = 'translate(' + (xpos + s * width) + 'px, ' + ypos + 'px)';
+                star.style.transform = 'translate(' + (xpos + s * width) + 'px, ' + ypos + 'px)';
+                star.style.backgroundColor = 'white'; //rgb(' + Math.round(Math.random() * 255) + ', ' + Math.round(Math.random() * 255) + ', ' + Math.round(Math.random() * 255) + ')';
+                layer.appendChild(star);
+            }
+        }
+        layer.animate([
+                {transform: 'translate3d(0, 0, 0)'},
+                {transform: 'translate3d(-' + width + 'px, 0, 0)'}
+            ],
+            {duration: Math.pow(2, layerCount - l) * 1000, iterations: Infinity});
+    }
+</script>
+</body>
+</html>
